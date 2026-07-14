@@ -19,7 +19,7 @@ def dict_factory(cursor, row):
             pass
     return d
 
-def search_products(category=None, query_str=None, attributes=None, price_max=None, channel='online', raw_query=None):
+def search_products(category=None, query_str=None, attributes=None, price_max=None, channel='online', raw_query=None, limit=None):
     """
     Search products based on category, query text, attributes, and max price.
     Also returns stock info for the specified channel.
@@ -56,6 +56,10 @@ def search_products(category=None, query_str=None, attributes=None, price_max=No
         query += " AND p.price <= ?"
         params.append(price_max)
         
+    if limit is not None:
+        query += " LIMIT ?"
+        params.append(limit)
+        
     cursor.execute(query, params)
     products = cursor.fetchall()
     conn.close()
@@ -75,6 +79,22 @@ def search_products(category=None, query_str=None, attributes=None, price_max=No
         return filtered
         
     return products
+
+def get_products_by_skus(sku_list):
+    """
+    Fetches full product records directly for a list of SKUs.
+    """
+    if not sku_list:
+        return []
+    conn = get_connection()
+    conn.row_factory = dict_factory
+    cursor = conn.cursor()
+    placeholders = ",".join("?" for _ in sku_list)
+    query = f"SELECT * FROM products WHERE sku IN ({placeholders})"
+    cursor.execute(query, list(sku_list))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
 
 def get_alternatives(sku, in_stock_only=True, channel='online'):
     """

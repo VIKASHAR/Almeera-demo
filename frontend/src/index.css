@@ -2190,3 +2190,12 @@ body {
   background: #115c2e;
 }
 
+/* Product image containment styled to look premium */
+.store-product-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+

@@ -15,7 +15,9 @@ CREATE TABLE products (
     subcategory TEXT NOT NULL,
     brand TEXT NOT NULL,
     price REAL NOT NULL,
-    attributes_json TEXT NOT NULL -- e.g., {"fat_content": "low-fat", "organic": true, "gluten_free": false}
+    attributes_json TEXT NOT NULL, -- e.g., {"fat_content": "low-fat", "organic": true, "gluten_free": false}
+    image_url TEXT,
+    product_url TEXT
 );
 
 -- 2. Inventory Table (channel-aware stock)

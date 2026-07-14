@@ -1454,7 +1454,11 @@ function App() {
                               <div className="store-product-card" style={{ margin: 0, width: '100%' }} onClick={() => { setSelectedSku(p.sku); setView('product'); }}>
                                 <span className="store-product-discount-badge">{Math.round(discountPct * 100)}% OFF</span>
                                 <div className="store-product-image-placeholder" style={{ background: '#fef2f2' }}>
-                                  <span style={{ color: 'var(--secondary)', fontSize: '12px', fontWeight: 700 }}>{p.subcategory}</span>
+                                  {p.image_url ? (
+                                    <img src={p.image_url} alt={p.name} className="store-product-image" />
+                                  ) : (
+                                    <span style={{ color: 'var(--secondary)', fontSize: '12px', fontWeight: 700 }}>{p.subcategory}</span>
+                                  )}
                                 </div>
                                 <div className="store-product-brand">{p.brand}</div>
                                 <div className="store-product-name" style={{ height: '36px', overflow: 'hidden' }}>{p.name}</div>
@@ -1594,9 +1598,13 @@ function App() {
 
                             {/* Image Placeholder */}
                             <div className="store-product-image-placeholder" style={{ background: p.category === 'Produce' ? '#eefaf2' : p.category === 'Dairy' ? '#eef5fc' : '#fcf5ee' }}>
-                              <span style={{ color: p.category === 'Produce' ? '#1b7a3e' : p.category === 'Dairy' ? '#2563eb' : '#d97706', fontSize: '14px' }}>
-                                {p.subcategory}
-                              </span>
+                              {p.image_url ? (
+                                <img src={p.image_url} alt={p.name} className="store-product-image" />
+                              ) : (
+                                <span style={{ color: p.category === 'Produce' ? '#1b7a3e' : p.category === 'Dairy' ? '#2563eb' : '#d97706', fontSize: '14px' }}>
+                                  {p.subcategory}
+                                </span>
+                              )}
                             </div>
 
                             {/* Details */}
@@ -1643,9 +1651,13 @@ function App() {
               <div className="product-detail-layout">
                 {/* Image Card */}
                 <div className="product-detail-img-box" style={{ background: detailedProduct.category === 'Produce' ? '#eefaf2' : detailedProduct.category === 'Dairy' ? '#eef5fc' : '#fcf5ee' }}>
-                  <span style={{ color: detailedProduct.category === 'Produce' ? '#1b7a3e' : detailedProduct.category === 'Dairy' ? '#2563eb' : '#d97706', fontSize: '24px', fontWeight: 700 }}>
-                    {detailedProduct.subcategory}
-                  </span>
+                  {detailedProduct.image_url ? (
+                    <img src={detailedProduct.image_url} alt={detailedProduct.name} className="store-product-image" style={{ maxHeight: '100%' }} />
+                  ) : (
+                    <span style={{ color: detailedProduct.category === 'Produce' ? '#1b7a3e' : detailedProduct.category === 'Dairy' ? '#2563eb' : '#d97706', fontSize: '24px', fontWeight: 700 }}>
+                      {detailedProduct.subcategory}
+                    </span>
+                  )}
                 </div>
 
                 {/* Details Section */}

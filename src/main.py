@@ -133,7 +133,7 @@ def list_customers():
 @app.get("/api/products")
 def get_products(category: str = None, search: str = None, channel: str = 'online'):
     try:
-        products = db.search_products(category=category, query_str=search, channel=channel)
+        products = db.search_products(category=category, query_str=search, channel=channel, limit=100)
         # Merge promotions
         skus = [p['sku'] for p in products]
         if skus:
@@ -156,8 +156,14 @@ def get_products(category: str = None, search: str = None, channel: str = 'onlin
 @app.get("/api/products/{sku}")
 def get_product_detail(sku: str, channel: str = 'online'):
     try:
-        products = db.search_products(channel=channel)
-        product = next((p for p in products if p['sku'] == sku), None)
+        # Get product directly by SKU to avoid full-table scan
+        conn = db.get_connection()
+        conn.row_factory = db.dict_factory
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM products WHERE sku = ?", (sku,))
+        product = cursor.fetchone()
+        conn.close()
+        
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
             

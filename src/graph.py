@@ -290,9 +290,9 @@ async def recipe_generator_node(state: AgentState) -> Dict[str, Any]:
     diet = profile.get("dietary_preference", "none")
     avoid_list = profile.get("avoid_list") or []
     
-    # Fetch in-stock products to bias the recipe toward available catalog items
+    # Fetch in-stock products (limited to 50 items to avoid prompt bloat) to bias the recipe toward available catalog items
     try:
-        available_products = db.search_products(channel=channel)
+        available_products = db.search_products(channel=channel, limit=50)
         product_names = [p['name'] for p in available_products if p.get('stock_qty', 0) > 0]
         product_list_str = ", ".join(product_names)
     except Exception as e:
@@ -549,11 +549,9 @@ async def composer_node(state: AgentState) -> Dict[str, Any]:
     rec_products = []
     combo_products = []
     if final_recommended:
-        rec_products = db.search_products(query_str=None)
-        rec_products = [p for p in rec_products if p['sku'] in final_recommended]
+        rec_products = db.get_products_by_skus(final_recommended)
     if final_combo:
-        combo_products = db.search_products(query_str=None)
-        combo_products = [p for p in combo_products if p['sku'] in final_combo]
+        combo_products = db.get_products_by_skus(final_combo)
         
     recommended_detail = json.dumps([{ "sku": p['sku'], "name": p['name'], "price": p['price'] } for p in rec_products], indent=2)
     combo_detail = json.dumps([{ "sku": p['sku'], "name": p['name'], "price": p['price'] } for p in combo_products], indent=2)
@@ -564,7 +562,7 @@ async def composer_node(state: AgentState) -> Dict[str, Any]:
     if no_matches and intent != "greeting":
         # Fetch all available in-stock products to suggest relevant alternatives
         try:
-            available_products = db.search_products(channel=state.get("channel", "online"))
+            available_products = db.search_products(channel=state.get("channel", "online"), limit=30)
             in_stock_catalog = [{ "name": p['name'], "price": p['price'], "category": p['category'] } for p in available_products if p.get('stock_qty', 0) > 0]
             in_stock_str = json.dumps(in_stock_catalog, indent=2)
         except Exception as e:

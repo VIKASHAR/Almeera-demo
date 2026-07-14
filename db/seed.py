@@ -26,7 +26,7 @@ def seed_database(db_path="db/mvp_demo.db", schema_path="db/schema.sql"):
     print("Schema applied successfully.")
     
     # 2. Seed Products
-    products = [
+    demo_products = [
         # DAIRY
         ("D1", "Organic Low-Fat Milk", "Dairy", "Milk", "Lactaid", 3.49, {"fat_content": "low-fat", "organic": True, "dairy_free": False, "gluten_free": True}),
         ("D2", "Organic Whole Milk", "Dairy", "Milk", "Horizon", 3.99, {"fat_content": "whole", "organic": True, "dairy_free": False, "gluten_free": True}),
@@ -61,18 +61,118 @@ def seed_database(db_path="db/mvp_demo.db", schema_path="db/schema.sql"):
         ("G10", "Premium Marinara Sauce", "Pantry/Grains", "Sauce", "Rao's", 6.99, {"organic": True, "vegan": True, "gluten_free": True}),
         ("G11", "White Sliced Bread", "Pantry/Grains", "Bakery", "Wonder", 2.49, {"organic": False, "vegan": True, "gluten_free": False}),
     ]
-    
+
+    products = [(sku, name, cat, subcat, brand, price, attr, None, None)
+                for sku, name, cat, subcat, brand, price, attr in demo_products]
+
+    # Load original products from products.db if it exists
+    orig_db_path = "db/products.db"
+    if os.path.exists(orig_db_path):
+        try:
+            orig_conn = sqlite3.connect(orig_db_path)
+            orig_cursor = orig_conn.cursor()
+            orig_cursor.execute("SELECT id, name, price, image_url, product_url, category FROM products")
+            rows = orig_cursor.fetchall()
+            
+            orig_count = 0
+            for row in rows:
+                id_val, name, price, image_url, product_url, category_str = row
+                
+                # Parse SKU
+                sku = product_url.split('/')[-1] if product_url else f"OP-{id_val}"
+                if not sku:
+                    sku = f"OP-{id_val}"
+                    
+                # Map Category & Subcategory
+                c = category_str.lower() if category_str else ""
+                cat = "Pantry/Grains"
+                subcat = "General"
+                
+                if any(k in c for k in ["fruit", "vegetable", "produce", "salad"]):
+                    cat = "Produce"
+                elif any(k in c for k in ["dairy", "milk", "cheese", "yogurt", "butter", "laban", "cream", "ghee"]):
+                    cat = "Dairy"
+                elif any(k in c for k in ["bakery", "bread", "pastry", "cake", "donut", "croissant", "buns"]):
+                    cat = "Bakery"
+                elif any(k in c for k in ["beverage", "juice", "water", "soda", "tea", "coffee", "drink"]):
+                    cat = "Beverages"
+                elif any(k in c for k in ["snack", "chocolate", "sweet", "chips", "nuts", "biscuit", "candy", "gum", "cracker"]):
+                    cat = "Snacks"
+                elif any(k in c for k in ["baby", "wipes", "diaper"]):
+                    cat = "Baby"
+                elif any(k in c for k in ["pet", "dog", "cat"]):
+                    cat = "Pet"
+                elif any(k in c for k in ["cleaning", "laundry", "household", "cleaner", "tissue", "detergent", "wash", "soap", "dishwash"]):
+                    cat = "Household"
+                elif any(k in c for k in ["pantry", "grain", "rice", "pasta", "noodle", "sauce", "oil", "spice", "seasoning", "flour", "canned", "jarred", "condiment"]):
+                    cat = "Pantry/Grains"
+                else:
+                    # Fallback based on top level category segment
+                    parts = category_str.split(" > ") if category_str else []
+                    if parts:
+                        top = parts[0].lower()
+                        if any(k in top for k in ["food", "grocery", "fresh", "ready to eat"]):
+                            cat = "Pantry/Grains"
+                        elif any(k in top for k in ["home", "living", "cleaning", "laundry", "electronics", "hardware", "tools", "sports", "health", "fitness", "personal care"]):
+                            cat = "Household"
+                
+                parts = category_str.split(" > ") if category_str else []
+                if len(parts) >= 2:
+                    subcat = parts[1]
+                elif parts:
+                    subcat = parts[0]
+                    
+                # Determine Brand
+                name_parts = name.strip().split() if name else []
+                brand = name_parts[0] if name_parts else "Generic"
+                
+                # Map Price (convert QAR to USD equivalent)
+                usd_price = round(price / 3.64, 2) if price is not None else 0.0
+                
+                # Tag Attributes
+                name_lower = name.lower() if name else ""
+                organic = "organic" in name_lower or "organic" in c
+                vegan = "vegan" in name_lower or "vegan" in c or cat == "Produce"
+                gluten_free = "gluten free" in name_lower or "gluten-free" in name_lower or "gluten-free" in c
+                
+                fat_content = "regular"
+                if any(k in name_lower for k in ["low fat", "low-fat", "non fat", "non-fat", "skimmed"]):
+                    fat_content = "low-fat"
+                elif any(k in name_lower for k in ["whole milk", "full cream", "full-cream"]):
+                    fat_content = "whole"
+                    
+                dairy_free = True
+                if cat == "Dairy" or any(k in name_lower for k in ["milk", "cheese", "yogurt", "butter", "cream"]):
+                    dairy_free = False
+                if "dairy free" in name_lower or "dairy-free" in name_lower:
+                    dairy_free = True
+                    
+                attr = {
+                    "organic": organic,
+                    "vegan": vegan,
+                    "gluten_free": gluten_free,
+                    "fat_content": fat_content,
+                    "dairy_free": dairy_free
+                }
+                
+                products.append((sku, name, cat, subcat, brand, usd_price, attr, image_url, product_url))
+                orig_count += 1
+            orig_conn.close()
+            print(f"Loaded {orig_count} original products from {orig_db_path}.")
+        except Exception as e:
+            print(f"Error loading original products: {e}")
+
     cursor.executemany(
-        "INSERT INTO products (sku, name, category, subcategory, brand, price, attributes_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [(sku, name, cat, subcat, brand, price, json.dumps(attr)) for sku, name, cat, subcat, brand, price, attr in products]
+        "INSERT INTO products (sku, name, category, subcategory, brand, price, attributes_json, image_url, product_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [(sku, name, cat, subcat, brand, price, json.dumps(attr), img, url) for sku, name, cat, subcat, brand, price, attr, img, url in products]
     )
     conn.commit()
-    print(f"Seeded {len(products)} products.")
+    print(f"Seeded {len(products)} products total.")
     
     # 3. Seed Inventory
     # We populate both 'online' and 'in_store' channels
     inventory_records = []
-    for sku, name, cat, subcat, brand, price, attr in products:
+    for sku, name, cat, subcat, brand, price, attr, img, url in products:
         # Default quantities
         online_qty = random.randint(10, 50)
         in_store_qty = random.randint(10, 50)
@@ -102,8 +202,23 @@ def seed_database(db_path="db/mvp_demo.db", schema_path="db/schema.sql"):
         ("PROM1", "G1", 0.20, "20% off Spaghetti Pasta!", "2026-12-31"),
         ("PROM2", "G3", 0.15, "Save 15% on Prego Tomato Sauce", "2026-12-31"),
         ("PROM3", "D3", 0.10, "10% Off Healthy Greek Yogurt", "2026-12-31"),
-        ("PROM4", "G10", 0.25, "Rao's Marinara 25% Clearance!", "2026-12-31"), # Even though out of stock, promo exists
+        ("PROM4", "G10", 0.25, "Rao's Marinara 25% Clearance!", "2026-12-31"),
     ]
+    
+    # Add random promotions for about 2% of original products
+    existing_promo_skus = {p[1] for p in promotions}
+    orig_products_list = [p for p in products if p[0] not in existing_promo_skus and (p[0].startswith("6") or p[0].startswith("8") or p[0].startswith("5"))]
+    
+    random.seed(42)
+    promoted_sample = random.sample(orig_products_list, min(len(orig_products_list), int(0.02 * len(orig_products_list))))
+    for i, p in enumerate(promoted_sample):
+        sku = p[0]
+        discount = random.choice([0.10, 0.15, 0.20, 0.25])
+        pct_str = f"{int(discount * 100)}%"
+        desc = f"Special Deal: {pct_str} off {p[1]}!"
+        promo_id = f"OPROM_{i}"
+        promotions.append((promo_id, sku, discount, desc, "2026-12-31"))
+
     cursor.executemany(
         "INSERT INTO promotions (promo_id, sku, discount_pct, description, valid_until) VALUES (?, ?, ?, ?, ?)",
         promotions
