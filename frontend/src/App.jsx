@@ -218,6 +218,7 @@ function App() {
   // Chat Widget State
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [sessionId, setSessionId] = useState(() => "session_" + Math.random().toString(36).substring(2, 11));
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -384,6 +385,28 @@ function App() {
     }
   }, [selectedCustomerId, customers]);
 
+  // Reset session and chat messages when switching customer persona
+  useEffect(() => {
+    setSessionId("session_" + Math.random().toString(36).substring(2, 11));
+    if (activeCustomer) {
+      setMessages([
+        {
+          sender: 'bot',
+          text: `Hello ${activeCustomer.name.split(' ')[0]}! I am your Al Meera assistant. How can I help you today?`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    } else {
+      setMessages([
+        {
+          sender: 'bot',
+          text: `Hello! I am your Al Meera assistant. How can I help you today?`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    }
+  }, [selectedCustomerId, activeCustomer]);
+
   // Fetch categories on load
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/categories`)
@@ -496,7 +519,7 @@ function App() {
           customer_id: selectedCustomerId,
           channel: channel,
           raw_text: userMessage.text,
-          session_id: "demo_session"
+          session_id: sessionId
         })
       });
       const chatResponse = await res.json();

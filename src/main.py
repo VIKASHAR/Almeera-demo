@@ -41,8 +41,8 @@ def health_check():
 @app.post("/chat")
 async def chat_endpoint(req: ChatRequest):
     try:
-        logger.info(f"Received chat request from customer={req.customer_id} on channel={req.channel}: '{req.raw_text}'")
-        result = await run_chatbot(req.customer_id, req.channel, req.raw_text)
+        logger.info(f"Received chat request from customer={req.customer_id} on channel={req.channel} session={req.session_id}: '{req.raw_text}'")
+        result = await run_chatbot(req.customer_id, req.channel, req.raw_text, req.session_id)
         return result
     except Exception as e:
         logger.error(f"Error in chat endpoint: {e}", exc_info=True)

@@ -19,6 +19,9 @@ class AgentState(TypedDict):
     channel: str # 'online' | 'in_store'
     session_id: str
     
+    # Conversational History Memory
+    chat_history: List[Dict[str, str]]
+    
     # Start time for timeout tracking
     start_time: float
     
@@ -84,12 +87,28 @@ async def intent_router_node(state: AgentState) -> Dict[str, Any]:
     Classifies user intent (search vs recipe vs greeting) and extracts category & filters.
     """
     logger.info(f"--- INTENT ROUTER NODE --- Query: {state['raw_text']}")
+    
+    # Compile chat history context if present
+    history_str = ""
+    chat_history = state.get("chat_history") or []
+    if chat_history:
+        history_str = "Conversation history:\n"
+        for turn in chat_history[-6:]:  # Keep last 3 turns
+            role_label = "User" if turn["role"] == "user" else "Assistant"
+            history_str += f"{role_label}: {turn['content']}\n"
+        history_str += "\n"
+
     prompt = f"""
     You are an intent router for a grocery store chatbot.
     Your task is to classify the user's query into one of three intents:
     1. 'search': The user is looking for a specific product, brand, category, or type of item (e.g. "low-fat milk", "need pasta", "do you have butter", "do you have mushrooms", "find oil").
     2. 'recipe': The user is asking for a meal suggestion, recipe, instructions, dinner ideas, or how to cook something (e.g. "suggest a pasta recipe for dinner", "what can I make with tomatoes", "how to make a sandwich", "recipe for salad").
     3. 'greeting': The user is saying hi, hello, greeting the bot, or asking general conversational questions (e.g. "hi", "hello", "how are you", "who are you", "can you help me").
+    
+    {history_str}
+    Current User Query: "{state['raw_text']}"
+    
+    IMPORTANT: If the Current User Query uses pronouns or relative words (like "it", "them", "that", "this", "those") to refer to items in the Conversation history, resolve those references and extract the correct "search_query" or "dish_name" values accordingly (e.g. if User previously asked for spaghetti, and now asks "how much is it?", search_query should be "spaghetti").
     
     Respond STRICTLY in JSON format with the following keys:
     - "intent": "search" | "recipe" | "greeting"
@@ -113,8 +132,6 @@ async def intent_router_node(state: AgentState) -> Dict[str, Any]:
           "attributes": {{}}, -- e.g. {{"fat_content": "low-fat"}} or {{"organic": true}} or {{"gluten_free": true}} (if specified in query)
           "price_max": float or null -- e.g. 5.50 (if specified)
        }}
-    
-    User Query: "{state['raw_text']}"
     """
     
     system_instruction = "You are a precise intent router. Output ONLY the JSON structure matching the schema."
@@ -582,6 +599,16 @@ async def composer_node(state: AgentState) -> Dict[str, Any]:
     # 5. Call LLM for final natural composition
     intent = state.get("intent", "search")
     
+    # Compile chat history context if present
+    history_str = ""
+    chat_history = state.get("chat_history") or []
+    if chat_history:
+        history_str = "Conversation history:\n"
+        for turn in chat_history[-6:]:  # Keep last 3 turns
+            role_label = "User" if turn["role"] == "user" else "Assistant"
+            history_str += f"{role_label}: {turn['content']}\n"
+        history_str += "\n"
+    
     if no_matches and intent != "greeting":
         # Fetch all available in-stock products to suggest relevant alternatives
         try:
@@ -596,7 +623,8 @@ async def composer_node(state: AgentState) -> Dict[str, Any]:
         You are the master composer for a smart grocery store checkout chatbot.
         The customer requested an item that we do not sell or that is currently out of stock.
         
-        User Query: "{state['raw_text']}"
+        {history_str}
+        Current User Query: "{state['raw_text']}"
         Intent: {intent}
         
         Available In-Stock products in our store:
@@ -618,7 +646,8 @@ async def composer_node(state: AgentState) -> Dict[str, Any]:
         You are the master composer for a smart grocery store checkout chatbot.
         Your task is to write a helpful, friendly response merging:
         
-        User Query: "{state['raw_text']}"
+        {history_str}
+        Current User Query: "{state['raw_text']}"
         Intent: {intent}
         
         1. Primary Results:
@@ -647,12 +676,18 @@ async def composer_node(state: AgentState) -> Dict[str, Any]:
             logger.error(f"Composer LLM call failed: {e}")
             reply_text = "Here are the best matches I found for you today in our catalog, including personalized recommendations and promotions."
 
+    # Append current turn to history
+    updated_history = list(chat_history)
+    updated_history.append({"role": "user", "content": state["raw_text"]})
+    updated_history.append({"role": "assistant", "content": reply_text})
+
     return {
         "reply_text": reply_text,
         "primary_cards": final_primary,
         "personalized_cards": final_recommended,
         "combo_cards": final_combo,
-        "enrichment_timed_out": enrichment_timed_out
+        "enrichment_timed_out": enrichment_timed_out,
+        "chat_history": updated_history
     }
 
 # --- Routing logic (sku_check) ---
@@ -732,21 +767,33 @@ def build_graph() -> StateGraph:
     # Final step
     workflow.add_edge("composer", END)
     
-    return workflow.compile()
+    return workflow.compile(checkpointer=checkpointer)
 
-# Compile the graph
-orchestrator_graph = build_graph()
+# Compile the graph with checkpointer memory saver
+from langgraph.checkpoint.memory import MemorySaver
+memory = MemorySaver()
+orchestrator_graph = build_graph(checkpointer=memory)
 
-async def run_chatbot(customer_id: str, channel: str, query: str) -> Dict[str, Any]:
+async def run_chatbot(customer_id: str, channel: str, query: str, session_id: str = "demo_session") -> Dict[str, Any]:
     """
     Runs the LangGraph chatbot orchestrator end-to-end (Asynchronous).
     """
+    config = {"configurable": {"thread_id": session_id}}
+    
+    # Check checkpointer for existing conversation memory history on this thread
+    try:
+        state_data = orchestrator_graph.get_state(config)
+        existing_history = state_data.values.get("chat_history", []) or []
+    except Exception:
+        existing_history = []
+
     initial_state = {
         "raw_text": query,
         "customer_id": customer_id,
         "channel": channel,
-        "session_id": "demo_session",
+        "session_id": session_id,
         "start_time": time.time(),
+        "chat_history": existing_history,
         "search_query": None,
         "resolved_skus": [],
         "substitutions_made": [],
@@ -763,9 +810,8 @@ async def run_chatbot(customer_id: str, channel: str, query: str) -> Dict[str, A
         "enrichment_timed_out": False
     }
     
-    # Execute the graph
-    # Using async call since nodes use async logic
-    final_state = await orchestrator_graph.ainvoke(initial_state)
+    # Execute the graph with config checkpointer thread mapping
+    final_state = await orchestrator_graph.ainvoke(initial_state, config=config)
     
     return {
         "text": final_state.get("reply_text", ""),
