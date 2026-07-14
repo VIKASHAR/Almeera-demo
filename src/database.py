@@ -282,7 +282,13 @@ def get_customer_recommendations(customer_id, category=None, query_str=None, cha
         stop_words = {"need", "want", "i", "get", "find", "search", "show", "me", "some", "recipe", "how", "make", "cook", "to", "for", "with"}
         keywords = [w for w in words if len(w) > 2 and w not in stop_words]
         
-        if keywords:
+        # Apply spelling corrections to extracted keywords
+        normalized_keywords = []
+        for kw in keywords:
+            norm_kw = kw.replace("briyani", "biryani").replace("spageti", "spaghetti")
+            normalized_keywords.append(norm_kw)
+        
+        if normalized_keywords:
             query = """
                 SELECT p.*, i.stock_qty, i.channel 
                 FROM products p
@@ -293,9 +299,9 @@ def get_customer_recommendations(customer_id, category=None, query_str=None, cha
             if in_stock_only:
                 query += " AND i.stock_qty > 0"
                 
-            like_clauses = " OR ".join("(LOWER(p.name) LIKE ? OR LOWER(p.subcategory) LIKE ?)" for _ in keywords)
+            like_clauses = " OR ".join("(LOWER(p.name) LIKE ? OR LOWER(p.subcategory) LIKE ?)" for _ in normalized_keywords)
             query += f" AND ({like_clauses})"
-            for kw in keywords:
+            for kw in normalized_keywords:
                 params.append(f"%{kw}%")
                 params.append(f"%{kw}%")
                 
