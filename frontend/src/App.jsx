@@ -236,6 +236,7 @@ function App() {
 
   // Al Meera Header Widgets State
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [deliveryMode, setDeliveryMode] = useState('scheduled'); // 'instant' | 'scheduled'
   const [deliveryLocation, setDeliveryLocation] = useState("Doha, Qatar");
 
@@ -677,21 +678,39 @@ function App() {
         </div>
 
         {/* Location Selector */}
-        <div 
-          className="header-location-pill" 
-          onClick={() => {
-            const locs = ["Doha, Qatar", "Lusail, Qatar", "Al Rayyan, Qatar", "Al Wakrah, Qatar", "Um Salal, Qatar"];
-            const currentIdx = locs.indexOf(deliveryLocation);
-            const nextIdx = (currentIdx + 1) % locs.length;
-            setDeliveryLocation(locs[nextIdx]);
-          }}
-        >
-          <Store size={18} style={{ color: '#6b7280' }} />
-          <div className="location-text">
-            <span className="location-label">Delivering to</span>
-            <span className="location-value">{deliveryLocation}</span>
+        <div style={{ position: 'relative' }}>
+          <div 
+            className="header-location-pill" 
+            onClick={() => {
+              setIsLocationDropdownOpen(!isLocationDropdownOpen);
+              setIsProfileDropdownOpen(false); // Close persona dropdown if open
+            }}
+          >
+            <Store size={18} style={{ color: '#6b7280' }} />
+            <div className="location-text">
+              <span className="location-label">Delivering to</span>
+              <span className="location-value">{deliveryLocation}</span>
+            </div>
+            <ChevronRight size={12} style={{ color: '#9ca3af', transform: isLocationDropdownOpen ? 'rotate(-90deg)' : 'rotate(90deg)' }} />
           </div>
-          <ChevronRight size={12} style={{ color: '#9ca3af', transform: 'rotate(90deg)' }} />
+
+          {isLocationDropdownOpen && (
+            <div className="profile-switcher-dropdown" style={{ left: 0, right: 'auto', minWidth: '220px' }} onClick={e => e.stopPropagation()}>
+              <div className="dropdown-header">Select Delivery Location</div>
+              {["Doha, Qatar", "Lusail, Qatar", "Al Rayyan, Qatar", "Al Wakrah, Qatar", "Um Salal, Qatar"].map(loc => (
+                <button 
+                  key={loc}
+                  className={`dropdown-item ${deliveryLocation === loc ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeliveryLocation(loc);
+                    setIsLocationDropdownOpen(false);
+                  }}
+                >
+                  <span className="dropdown-item-name">{loc}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Center Search Bar */}
@@ -740,18 +759,21 @@ function App() {
           <ChevronRight size={12} style={{ color: '#4b5563', transform: 'rotate(90deg)' }} />
         </div>
 
-        {/* Login & Register (Profile Switcher Dropdown) */}
+        {/* Persona Selector Dropdown */}
         <div 
           className="header-login-register" 
-          onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+          onClick={() => {
+            setIsProfileDropdownOpen(!isProfileDropdownOpen);
+            setIsLocationDropdownOpen(false); // Close location dropdown if open
+          }}
         >
           <User size={18} style={{ color: '#6b7280' }} />
-          <span>{activeCustomer ? activeCustomer.name.split(' ')[0] : 'Login & Register'}</span>
-          <ChevronRight size={12} style={{ color: '#4b5563', transform: 'rotate(90deg)' }} />
+          <span>{activeCustomer ? `Persona: ${activeCustomer.name.split(' ')[0]}` : 'Select Persona'}</span>
+          <ChevronRight size={12} style={{ color: '#4b5563', transform: isProfileDropdownOpen ? 'rotate(-90deg)' : 'rotate(90deg)' }} />
 
           {isProfileDropdownOpen && (
             <div className="profile-switcher-dropdown" onClick={e => e.stopPropagation()}>
-              <div className="dropdown-header">Switch Demo Profile</div>
+              <div className="dropdown-header">Select Customer Persona</div>
               {customers.map(c => {
                 const prefs = mapCustomerPreferences(c.preferences_json);
                 return (
