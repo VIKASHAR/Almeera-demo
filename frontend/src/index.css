@@ -389,7 +389,7 @@ body {
 
 /* Sidebar Styling - Re-styled for slim vertical left sidebar matching screenshot */
 .sidebar {
-  width: 80px;
+  width: 96px;
   background: #ffffff;
   border-right: 1px solid var(--border-glass);
   display: flex;
@@ -397,8 +397,8 @@ body {
   align-items: center;
   flex-shrink: 0;
   overflow-y: auto;
-  padding: 20px 0;
-  gap: 16px;
+  padding: 24px 0;
+  gap: 20px;
 }
 
 .sidebar-btn {
@@ -415,9 +415,9 @@ body {
 }
 
 .sidebar-icon-container {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -442,7 +442,7 @@ body {
 }
 
 .sidebar-text {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   color: #4b5563;
   text-align: center;
@@ -459,11 +459,11 @@ body {
   right: -4px;
   background: var(--secondary);
   color: white;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   border-radius: 50%;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1405,10 +1405,10 @@ body {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -1421,7 +1421,7 @@ body {
 }
 
 .store-product-image-placeholder {
-  height: 140px;
+  height: 160px;
   background: #f3f4f6;
   border-radius: 12px;
   display: flex;
@@ -1438,7 +1438,7 @@ body {
   left: 10px;
   background: var(--warning);
   color: white;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   padding: 4px 8px;
   border-radius: 6px;
@@ -1453,23 +1453,23 @@ body {
   background: rgba(255, 255, 255, 0.9);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   z-index: 2;
 }
 
 .store-product-brand {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .store-product-name {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-bright);
-  height: 48px;
+  height: 54px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1484,13 +1484,13 @@ body {
 }
 
 .store-product-price {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-bright);
 }
 
 .store-product-original-price {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   text-decoration: line-through;
   margin-right: 6px;
@@ -1501,7 +1501,8 @@ body {
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 6px 12px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
