@@ -196,7 +196,7 @@ const AlMeeraLogo = () => (
   <img 
     src="/almeera-logo-b.svg" 
     alt="Al Meera Logo" 
-    style={{ height: '38px', display: 'block', cursor: 'pointer' }} 
+    style={{ height: '46px', display: 'block', cursor: 'pointer' }} 
   />
 );
 
