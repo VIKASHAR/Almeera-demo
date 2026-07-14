@@ -186,7 +186,6 @@ const SIDEBAR_CATEGORIES = [
   { id: 'Beverages', name: 'Beverages', icon: '🥤' },
   { id: 'Snacks', name: 'Snacks & Sweets', icon: '🍿' },
   { id: 'Diet', name: 'Healthy & Diet Choices', icon: '🥗' },
-  { id: 'Al Meera Products', name: 'Al Meera Products', icon: '🏷️' },
   { id: 'Bakery', name: 'Bakery & Bread', icon: '🍞' },
   { id: 'Household', name: 'Household Essentials', icon: '🧻' },
   { id: 'Baby', name: 'Baby & Personal Care', icon: '🍼' },
@@ -238,12 +237,14 @@ function App() {
   // Al Meera Header Widgets State
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [deliveryMode, setDeliveryMode] = useState('scheduled'); // 'instant' | 'scheduled'
+  const [deliveryLocation, setDeliveryLocation] = useState("Doha, Qatar");
 
   const carouselSlides = [
     {
       id: 1,
       title: "Freshness & Value Delivered Daily",
       desc: "Welcome to the official Al Meera online store. Browse fresh produce, dairy, bakery, weekly discount flyer items, and premium private labels.",
+      locations: ["Doha", "Lusail", "Al Rayyan", "Al Wakrah", "Um Salal"],
       btnText: "Shop Fresh Produce",
       action: () => setSelectedCategory('Produce'),
       bgGradient: "linear-gradient(135deg, #eef5f0 0%, #dcfce7 100%)",
@@ -676,11 +677,19 @@ function App() {
         </div>
 
         {/* Location Selector */}
-        <div className="header-location-pill" onClick={() => alert("Deliver to Doha, Qatar selected.")}>
+        <div 
+          className="header-location-pill" 
+          onClick={() => {
+            const locs = ["Doha, Qatar", "Lusail, Qatar", "Al Rayyan, Qatar", "Al Wakrah, Qatar", "Um Salal, Qatar"];
+            const currentIdx = locs.indexOf(deliveryLocation);
+            const nextIdx = (currentIdx + 1) % locs.length;
+            setDeliveryLocation(locs[nextIdx]);
+          }}
+        >
           <Store size={18} style={{ color: '#6b7280' }} />
           <div className="location-text">
             <span className="location-label">Delivering to</span>
-            <span className="location-value">Doha, Qatar</span>
+            <span className="location-value">{deliveryLocation}</span>
           </div>
           <ChevronRight size={12} style={{ color: '#9ca3af', transform: 'rotate(90deg)' }} />
         </div>
@@ -704,23 +713,23 @@ function App() {
         <div className="header-delivery-modes">
           <div 
             className={`delivery-mode-pill instant ${deliveryMode === 'instant' ? 'active' : ''}`}
-            onClick={() => { setDeliveryMode('instant'); alert("Switched to Instant Delivery (In 40 Mins)"); }}
+            onClick={() => setDeliveryMode('instant')}
           >
-            <Globe size={16} style={{ color: '#1b7a3e' }} />
+            <Globe size={16} style={{ color: deliveryMode === 'instant' ? '#ffffff' : '#1b7a3e' }} />
             <div className="delivery-text">
-              <span className="delivery-title">Instant Delivery</span>
-              <span className="delivery-time">In 40 Mins</span>
+              <span className="delivery-title" style={{ color: deliveryMode === 'instant' ? '#ffffff' : 'var(--primary)' }}>Instant Delivery</span>
+              <span className="delivery-time" style={{ color: deliveryMode === 'instant' ? 'rgba(255, 255, 255, 0.8)' : '#6b7280' }}>In 40 Mins</span>
             </div>
           </div>
 
           <div 
             className={`delivery-mode-pill scheduled ${deliveryMode === 'scheduled' ? 'active' : ''}`}
-            onClick={() => { setDeliveryMode('scheduled'); alert("Switched to Scheduled Delivery (Today, 4:00pm - 6:00pm)"); }}
+            onClick={() => setDeliveryMode('scheduled')}
           >
-            <Store size={16} style={{ color: '#fcd34d' }} />
+            <Store size={16} style={{ color: deliveryMode === 'scheduled' ? '#ffffff' : '#b89309' }} />
             <div className="delivery-text">
-              <span className="delivery-title">Scheduled Delivery</span>
-              <span className="delivery-time">Today, 4:00pm - 6:00pm</span>
+              <span className="delivery-title" style={{ color: deliveryMode === 'scheduled' ? '#ffffff' : '#374151' }}>Scheduled Delivery</span>
+              <span className="delivery-time" style={{ color: deliveryMode === 'scheduled' ? 'rgba(255, 255, 255, 0.8)' : '#6b7280' }}>Today, 4-6pm</span>
             </div>
           </div>
         </div>
@@ -834,46 +843,6 @@ function App() {
             <span className="sidebar-text">Fresh Food</span>
           </button>
 
-          {/* Qatari Products sidebar button */}
-          <button 
-            className={`sidebar-btn ${selectedCategory === 'Qatari Products' ? 'active' : ''}`}
-            onClick={() => {
-              setSelectedCategory('Qatari Products');
-              setView('home');
-              setSelectedSku(null);
-            }}
-          >
-            <div className="sidebar-icon-container">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4z" fill="#8A1538" rx="4"/><path d="M4 4 L9 8 L4 12 L9 16 L4 20 L4 4" fill="#ffffff"/></svg>
-            </div>
-            <span className="sidebar-text">Qatari Products</span>
-          </button>
-
-          {/* Almeera Products sidebar button */}
-          <button 
-            className={`sidebar-btn ${selectedCategory === 'Al Meera Products' ? 'active' : ''}`}
-            onClick={() => {
-              setSelectedCategory('Al Meera Products');
-              setView('home');
-              setSelectedSku(null);
-            }}
-          >
-            <div className="sidebar-icon-container">
-              <svg width="22" height="22" viewBox="0 0 46 44" fill="none">
-                <path d="M 5 22 C 3 11 11 3 23 3 C 35 3 43 11 43 22 C 43 33 35 41 23 41 C 11 41 7 33 5 22 Z" fill="#acd600" />
-                <path d="M 14 34 C 15 26 21 18 31 10" stroke="#005A36" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                <path d="M 28 12 C 24 13 20 15 17 19" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M 24 16 C 20 18 17 21 14 25" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M 20 21 C 17 23 14 26 12 31" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M 17 26 C 14 28 12 31 10 35" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M 28 12 C 29 15 29 19 28 22" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M 24 16 C 26 19 26 23 25 26" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M 20 21 C 22 24 22 27 21 31" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M 17 26 C 19 29 19 32 18 35" stroke="#005A36" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-              </svg>
-            </div>
-            <span className="sidebar-text">Almeera Products</span>
-          </button>
 
         </aside>
 
@@ -909,7 +878,20 @@ function App() {
                           <div className="carousel-slide-left">
                             <h1 style={{ color: slide.titleColor }}>{slide.title}</h1>
                             <p>{slide.desc}</p>
-                            <button className="hero-banner-btn" onClick={slide.action} style={{ background: slide.titleColor }}>
+                            
+                            {/* Render locations list if present in slide */}
+                            {slide.locations && (
+                              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center', margin: '8px 0' }}>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-bright)', opacity: 0.8 }}>📍 Delivering to:</span>
+                                {slide.locations.map(loc => (
+                                  <span key={loc} style={{ fontSize: '10px', background: 'rgba(0, 90, 54, 0.08)', color: '#005A36', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                                    {loc}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            <button className="hero-banner-btn" onClick={slide.action} style={{ background: slide.titleColor, marginTop: '8px' }}>
                               {slide.btnText}
                             </button>
                           </div>
@@ -981,7 +963,6 @@ function App() {
                       { id: 'Beverages', name: 'Beverages', icon: '🥤', count: '5 Items' },
                       { id: 'Snacks', name: 'Snacks & Sweets', icon: '🍿', count: '5 Items' },
                       { id: 'Diet', name: 'Healthy Choices', icon: '🥗', count: 'Diet Profiles' },
-                      { id: 'Al Meera Products', name: 'Al Meera Products', icon: '🏷️', count: 'Private Label' },
                       { id: 'Bakery', name: 'Bakery & Bread', icon: '🍞', count: 'Fresh Daily' },
                       { id: 'Household', name: 'Household Essentials', icon: '🧻', count: 'Home Care' },
                       { id: 'Baby', name: 'Baby & Personal Care', icon: '🍼', count: 'Baby Care' },
