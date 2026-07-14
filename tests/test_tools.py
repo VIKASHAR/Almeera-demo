@@ -41,39 +41,39 @@ def test_search_products():
         assert r["attributes_json"]["fat_content"] == "low-fat"
 
 def test_get_alternatives():
-    # SKU G10 (Rao's Marinara) is seeded as out of stock in both channels
-    alt_online = db.get_alternatives("G10", in_stock_only=True, channel="online")
+    # SKU '6281020101111' (Luna Tomato Sauce) is seeded as out of stock in both channels
+    alt_online = db.get_alternatives("6281020101111", in_stock_only=True, channel="online")
     assert len(alt_online) > 0
-    # Alternatives should be in the same subcategory (Sauce) or category (Pantry/Grains) and in stock
+    # Alternatives should be in the same subcategory or category and in stock
     for alt in alt_online:
-        assert alt["sku"] != "G10"
+        assert alt["sku"] != "6281020101111"
         assert alt["stock_qty"] > 0
 
 def test_check_inventory():
-    stock = db.check_inventory(["D1", "D2"], channel="online")
-    # D1 low fat milk should have 0 online stock (seeded custom test case)
-    assert stock.get("D1") == 0
-    # D2 organic whole milk should be in stock
-    assert stock.get("D2", 0) > 0
+    stock = db.check_inventory(["3043931692415", "5255010204428"], channel="online")
+    # Skimmed Milk should have 0 online stock (seeded custom test case)
+    assert stock.get("3043931692415") == 0
+    # Full Cream Milk should be in stock
+    assert stock.get("5255010204428", 0) > 0
     
-    # Check in-store channel where D1 has 5 stock
-    store_stock = db.check_inventory(["D1", "D2"], channel="in_store")
-    assert store_stock.get("D1") == 5
+    # Check in-store channel where Skimmed Milk has 5 stock
+    store_stock = db.check_inventory(["3043931692415", "5255010204428"], channel="in_store")
+    assert store_stock.get("3043931692415") == 5
 
 def test_get_active_offers():
-    offers = db.get_active_offers(["G1", "G3"])
+    offers = db.get_active_offers(["5000157026224", "6281020101111"])
     assert len(offers) > 0
     skus = {o["sku"] for o in offers}
-    assert "G1" in skus or "G3" in skus
+    assert "5000157026224" in skus or "6281020101111" in skus
 
 def test_map_ingredients_to_skus():
     mapping = db.map_ingredients_to_skus(["spaghetti", "tomatoes", "low-fat milk"])
     assert mapping["spaghetti"] is not None
-    assert mapping["spaghetti"]["sku"] == "G1" or mapping["spaghetti"]["subcategory"] == "Pasta"
+    assert mapping["spaghetti"]["sku"] == "5000157026224" or "spaghetti" in mapping["spaghetti"]["name"].lower()
     assert mapping["tomatoes"] is not None
-    assert mapping["tomatoes"]["subcategory"] == "Tomatoes"
+    assert "tomato" in mapping["tomatoes"]["name"].lower() or mapping["tomatoes"]["subcategory"] == "Tomatoes"
     assert mapping["low-fat milk"] is not None
-    assert mapping["low-fat milk"]["sku"] == "D1" or "milk" in mapping["low-fat milk"]["name"].lower()
+    assert mapping["low-fat milk"]["sku"] == "3043931692415" or "milk" in mapping["low-fat milk"]["name"].lower()
 
 def test_get_customer_recommendations():
     # Customer Alice (c1) prefers low-fat, dairy
@@ -91,12 +91,13 @@ def test_get_customer_recommendations():
         assert r["attributes_json"].get("vegan") is not False
 
 def test_get_affinity():
-    # G1 (Spaghetti) should trigger G3 (Tomato Sauce) or similar due to our seeded transactions
-    recs = db.get_affinity(["G1"], top_n=2)
+    # Spaghetti ('5000157026224') should trigger items in the same pasta basket due to our seeded transactions
+    recs = db.get_affinity(["5000157026224"], top_n=2)
     assert len(recs) > 0
     skus = [r["sku"] for r in recs]
-    # Spaghetti is bought with Tomato Sauce (G3) or Tomatoes (P1)
-    assert "G3" in skus or "P1" in skus
+    pasta_basket = {"6281020101111", "9911054000000", "8006830991763", "9910815000000", "6281011135897"}
+    for sku in skus:
+        assert sku in pasta_basket
 
 def test_get_customer_profile():
     profile = db.get_customer_profile("c1")

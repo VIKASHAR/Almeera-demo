@@ -40,244 +40,12 @@ const mapCustomerPreferences = (prefJson) => {
   };
 };
 
-const MOCK_BEVERAGES = [
-  {
-    sku: "B1",
-    name: "Al Meera Fresh Orange Juice 1L",
-    category: "Beverages",
-    subcategory: "Juice",
-    brand: "Al Meera",
-    price: 3.49,
-    stock_qty: 25,
-    attributes_json: JSON.stringify({ organic: true, vegan: true, dairy_free: true, gluten_free: true, fat_content: "non-fat" }),
-    promotion: { discount_pct: 0.15, description: "15% Off Fresh Juice Promotion" }
-  },
-  {
-    sku: "B2",
-    name: "Al Meera Lemon Mint Juice 1L",
-    category: "Beverages",
-    subcategory: "Juice",
-    brand: "Al Meera",
-    price: 2.99,
-    stock_qty: 30,
-    attributes_json: JSON.stringify({ organic: true, vegan: true, dairy_free: true, gluten_free: true, fat_content: "non-fat" }),
-    promotion: null
-  },
-  {
-    sku: "B3",
-    name: "Rayyan Mineral Water 6x1.5L",
-    category: "Beverages",
-    subcategory: "Water",
-    brand: "Rayyan",
-    price: 1.99,
-    stock_qty: 45,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: null
-  },
-  {
-    sku: "B4",
-    name: "Coca Cola Zero Sugar 6x355ml",
-    category: "Beverages",
-    subcategory: "Soda",
-    brand: "Coca-Cola",
-    price: 3.99,
-    stock_qty: 20,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: null
-  },
-  {
-    sku: "B5",
-    name: "Lipton Organic Green Tea 25 Bags",
-    category: "Beverages",
-    subcategory: "Tea",
-    brand: "Lipton",
-    price: 4.49,
-    stock_qty: 18,
-    attributes_json: JSON.stringify({ organic: true, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: { discount_pct: 0.10, description: "Save 10% on Organic Green Tea" }
-  }
-];
-
-const MOCK_SNACKS = [
-  {
-    sku: "S1",
-    name: "Lay's Classic Salted Potato Chips",
-    category: "Snacks",
-    subcategory: "Chips",
-    brand: "Lay's",
-    price: 1.49,
-    stock_qty: 40,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: null
-  },
-  {
-    sku: "S2",
-    name: "Al Meera Mixed Raw Nuts 250g",
-    category: "Snacks",
-    subcategory: "Nuts",
-    brand: "Al Meera",
-    price: 5.99,
-    stock_qty: 15,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: { discount_pct: 0.20, description: "20% off Premium Mixed Nuts" }
-  },
-  {
-    sku: "S3",
-    name: "Nature Valley Organic Oats & Honey Bar",
-    category: "Snacks",
-    subcategory: "Granola Bars",
-    brand: "Nature Valley",
-    price: 3.49,
-    stock_qty: 25,
-    attributes_json: JSON.stringify({ organic: true, vegan: false, dairy_free: false, gluten_free: false }),
-    promotion: null
-  },
-  {
-    sku: "S4",
-    name: "Lindt Excellence Dark Chocolate 70%",
-    category: "Snacks",
-    subcategory: "Chocolate",
-    brand: "Lindt",
-    price: 2.99,
-    stock_qty: 35,
-    attributes_json: JSON.stringify({ organic: true, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: null
-  },
-  {
-    sku: "S5",
-    name: "Al Meera Butter Popcorn 100g",
-    category: "Snacks",
-    subcategory: "Popcorn",
-    brand: "Al Meera",
-    price: 1.99,
-    stock_qty: 28,
-    attributes_json: JSON.stringify({ organic: false, vegan: false, dairy_free: false, gluten_free: true }),
-    promotion: { discount_pct: 0.15, description: "15% off movie night popcorn!" }
-  }
-];
-
-const MOCK_BAKERY = [
-  {
-    sku: "BK1",
-    name: "Al Meera Fresh Sliced White Bread 600g",
-    category: "Bakery",
-    subcategory: "Bread",
-    brand: "Al Meera",
-    price: 1.25,
-    stock_qty: 15,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: false }),
-    promotion: null
-  },
-  {
-    sku: "BK2",
-    name: "Al Meera Whole Meal Sliced Bread 600g",
-    category: "Bakery",
-    subcategory: "Bread",
-    brand: "Al Meera",
-    price: 1.49,
-    stock_qty: 12,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: false }),
-    promotion: { discount_pct: 0.10, description: "10% off healthy bread" }
-  },
-  {
-    sku: "BK3",
-    name: "Al Meera Fresh Butter Croissants 4s",
-    category: "Bakery",
-    subcategory: "Croissant",
-    brand: "Al Meera",
-    price: 2.19,
-    stock_qty: 8,
-    attributes_json: JSON.stringify({ organic: false, vegan: false, dairy_free: false, gluten_free: false }),
-    promotion: null
-  }
-];
-
-const MOCK_HOUSEHOLD = [
-  {
-    sku: "HH1",
-    name: "Al Meera Facial Tissues 5x200 Sheets",
-    category: "Household",
-    subcategory: "Tissues",
-    brand: "Al Meera",
-    price: 3.29,
-    stock_qty: 50,
-    attributes_json: JSON.stringify({ organic: false }),
-    promotion: { discount_pct: 0.15, description: "Save on tissues pack" }
-  },
-  {
-    sku: "HH2",
-    name: "Al Meera Premium Dishwashing Liquid 1L",
-    category: "Household",
-    subcategory: "Dishwashing",
-    brand: "Al Meera",
-    price: 2.49,
-    stock_qty: 35,
-    attributes_json: JSON.stringify({ organic: false }),
-    promotion: null
-  },
-  {
-    sku: "HH3",
-    name: "Al Meera Multi-Purpose Glass Cleaner 500ml",
-    category: "Household",
-    subcategory: "Cleaner",
-    brand: "Al Meera",
-    price: 1.99,
-    stock_qty: 20,
-    attributes_json: JSON.stringify({ organic: false }),
-    promotion: null
-  }
-];
-
-const MOCK_BABY = [
-  {
-    sku: "BB1",
-    name: "Al Meera Sensitive Baby Wipes 80 Sheets",
-    category: "Baby",
-    subcategory: "Wipes",
-    brand: "Al Meera",
-    price: 1.89,
-    stock_qty: 40,
-    attributes_json: JSON.stringify({ organic: false, alcohol_free: true }),
-    promotion: null
-  },
-  {
-    sku: "BB2",
-    name: "Al Meera Baby Powder 200g",
-    category: "Baby",
-    subcategory: "Powder",
-    brand: "Al Meera",
-    price: 2.99,
-    stock_qty: 25,
-    attributes_json: JSON.stringify({ organic: false }),
-    promotion: null
-  }
-];
-
-const MOCK_PET = [
-  {
-    sku: "PT1",
-    name: "Purina Alpo Beef Dry Dog Food 1.5kg",
-    category: "Pet",
-    subcategory: "Dog Food",
-    brand: "Purina",
-    price: 6.99,
-    stock_qty: 15,
-    attributes_json: JSON.stringify({ organic: false }),
-    promotion: null
-  },
-  {
-    sku: "PT2",
-    name: "Whiskas Ocean Fish Dry Cat Food 1.2kg",
-    category: "Pet",
-    subcategory: "Cat Food",
-    brand: "Whiskas",
-    price: 5.99,
-    stock_qty: 18,
-    attributes_json: JSON.stringify({ organic: false }),
-    promotion: { discount_pct: 0.10, description: "10% off Cat Food" }
-  }
-];
-
+const MOCK_BEVERAGES = [];
+const MOCK_SNACKS = [];
+const MOCK_BAKERY = [];
+const MOCK_HOUSEHOLD = [];
+const MOCK_BABY = [];
+const MOCK_PET = [];
 const categoryBanners = {
   'Produce': {
     title: "Fresh Fruits & Vegetables",
@@ -433,63 +201,7 @@ const AlMeeraLogo = () => (
   />
 );
 
-const MOCK_QATARI_PRODUCTS = [
-  {
-    sku: "QP1",
-    name: "Baladna Fresh Milk Full Cream 2L",
-    category: "Dairy",
-    subcategory: "Milk",
-    brand: "Baladna",
-    price: 3.85,
-    stock_qty: 30,
-    attributes_json: JSON.stringify({ organic: false, vegan: false, dairy_free: false, gluten_free: true }),
-    promotion: null
-  },
-  {
-    sku: "QP2",
-    name: "Baladna Fresh Premium Laban 2L",
-    category: "Dairy",
-    subcategory: "Laban",
-    brand: "Baladna",
-    price: 3.50,
-    stock_qty: 25,
-    attributes_json: JSON.stringify({ organic: false, vegan: false, dairy_free: false, gluten_free: true }),
-    promotion: { discount_pct: 0.10, description: "10% off Baladna Laban" }
-  },
-  {
-    sku: "QP3",
-    name: "Rayyan Pure Natural Water 6x1.5L",
-    category: "Beverages",
-    subcategory: "Water",
-    brand: "Rayyan",
-    price: 1.99,
-    stock_qty: 50,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: null
-  },
-  {
-    sku: "QP4",
-    name: "Dandy Fresh Orange Juice 1.5L",
-    category: "Beverages",
-    subcategory: "Juice",
-    brand: "Dandy",
-    price: 2.75,
-    stock_qty: 20,
-    attributes_json: JSON.stringify({ organic: false, vegan: true, dairy_free: true, gluten_free: true }),
-    promotion: null
-  },
-  {
-    sku: "QP5",
-    name: "Mazzraty Fresh Chicken Breast 450g",
-    category: "Fresh Food",
-    subcategory: "Poultry",
-    brand: "Mazzraty",
-    price: 5.49,
-    stock_qty: 15,
-    attributes_json: JSON.stringify({ organic: true, vegan: false, dairy_free: true, gluten_free: true }),
-    promotion: null
-  }
-];
+const MOCK_QATARI_PRODUCTS = [];
 
 function App() {
   // Storefront navigation state
@@ -685,8 +397,9 @@ function App() {
   }, []);
 
   // Fetch products whenever channel, selectedCategory, or searchQuery changes
+  // Fetch products whenever channel, selectedCategory, or searchQuery changes
   useEffect(() => {
-    const isDbCategory = selectedCategory && !['Beverages', 'Snacks', 'Diet', 'Al Meera Products', 'Bakery', 'Household', 'Baby', 'Pet', 'Fresh Food', 'Qatari Products', 'Categories'].includes(selectedCategory);
+    const isDbCategory = selectedCategory && !['Diet', 'Al Meera Products', 'Fresh Food', 'Qatari Products', 'Categories'].includes(selectedCategory);
     let url = `${BACKEND_URL}/api/products?channel=${channel}`;
     if (isDbCategory) {
       url += `&category=${encodeURIComponent(selectedCategory)}`;
@@ -698,161 +411,23 @@ function App() {
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        if (selectedCategory === 'Beverages') {
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const filtered = MOCK_BEVERAGES.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-            setProducts(filtered);
-          } else {
-            setProducts(MOCK_BEVERAGES);
-          }
-        } else if (selectedCategory === 'Snacks') {
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const filtered = MOCK_SNACKS.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-            setProducts(filtered);
-          } else {
-            setProducts(MOCK_SNACKS);
-          }
-        } else if (selectedCategory === 'Bakery') {
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const filtered = MOCK_BAKERY.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-            setProducts(filtered);
-          } else {
-            setProducts(MOCK_BAKERY);
-          }
-        } else if (selectedCategory === 'Household') {
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const filtered = MOCK_HOUSEHOLD.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-            setProducts(filtered);
-          } else {
-            setProducts(MOCK_HOUSEHOLD);
-          }
-        } else if (selectedCategory === 'Baby') {
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const filtered = MOCK_BABY.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-            setProducts(filtered);
-          } else {
-            setProducts(MOCK_BABY);
-          }
-        } else if (selectedCategory === 'Pet') {
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            const filtered = MOCK_PET.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-            setProducts(filtered);
-          } else {
-            setProducts(MOCK_PET);
-          }
-        } else if (selectedCategory === 'Diet') {
+        if (selectedCategory === 'Diet') {
           const healthyDb = data.filter(p => {
             const attrs = jsonParseSafe(p.attributes_json);
             return attrs.organic || attrs.vegan || attrs.gluten_free || attrs.fat_content === 'low-fat' || attrs.fat_content === 'non-fat';
           });
-          const healthyMock = [...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET].filter(p => {
-            const attrs = jsonParseSafe(p.attributes_json);
-            return attrs.organic || attrs.vegan || attrs.gluten_free || attrs.fat_content === 'low-fat' || attrs.fat_content === 'non-fat';
-          });
-          let combined = [...healthyDb, ...healthyMock];
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            combined = combined.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-          }
-          setProducts(combined);
+          setProducts(healthyDb);
         } else if (selectedCategory === 'Al Meera Products') {
           const alMeeraDb = data.filter(p => p.brand === 'Al Meera' || p.name.toLowerCase().includes('al meera'));
-          const alMeeraMock = [...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET].filter(p => p.brand === 'Al Meera' || p.name.toLowerCase().includes('al meera'));
-          let combined = [...alMeeraDb, ...alMeeraMock];
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            combined = combined.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-          }
-          setProducts(combined);
+          setProducts(alMeeraDb);
         } else if (selectedCategory === 'Fresh Food') {
           const freshDb = data.filter(p => p.category === 'Produce' || p.category === 'Dairy');
-          let combined = [...freshDb];
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            combined = combined.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-          }
-          setProducts(combined);
+          setProducts(freshDb);
         } else if (selectedCategory === 'Qatari Products') {
           const qatariDb = data.filter(p => p.brand === 'Rayyan' || p.brand === 'Baladna' || p.brand === 'Dandy' || p.name.toLowerCase().includes('qatar') || p.brand.toLowerCase().includes('qatar'));
-          const qatariMock = [...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET, ...MOCK_QATARI_PRODUCTS].filter(p => p.brand === 'Rayyan' || p.brand === 'Baladna' || p.brand === 'Dandy' || p.name.toLowerCase().includes('qatar'));
-          let combined = [...qatariDb, ...qatariMock];
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            combined = combined.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-          }
-          setProducts(combined);
-        } else if (selectedCategory === 'Categories') {
-          let combined = [...data, ...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET, ...MOCK_QATARI_PRODUCTS];
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            combined = combined.filter(p => 
-              p.name.toLowerCase().includes(query) || 
-              p.subcategory.toLowerCase().includes(query) || 
-              p.brand.toLowerCase().includes(query)
-            );
-          }
-          setProducts(combined);
+          setProducts(qatariDb);
         } else {
-          if (!selectedCategory) {
-            let combined = [...data, ...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET];
-            if (searchQuery) {
-              const query = searchQuery.toLowerCase();
-              combined = combined.filter(p => 
-                p.name.toLowerCase().includes(query) || 
-                p.subcategory.toLowerCase().includes(query) || 
-                p.brand.toLowerCase().includes(query)
-              );
-            }
-            setProducts(combined);
-          } else {
-            setProducts(data);
-          }
+          setProducts(data);
         }
       })
       .catch(err => console.error("Error fetching products:", err));
@@ -861,22 +436,10 @@ function App() {
   // Fetch detailed product info when selectedSku changes
   useEffect(() => {
     if (selectedSku) {
-      const mockProd = [...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET, ...MOCK_QATARI_PRODUCTS].find(p => p.sku === selectedSku);
-      if (mockProd) {
-        const mockAlts = [...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET, ...MOCK_QATARI_PRODUCTS]
-          .filter(p => p.category === mockProd.category && p.sku !== mockProd.sku)
-          .slice(0, 4);
-        setDetailedProduct({
-          ...mockProd,
-          stock: { online: mockProd.stock_qty, in_store: mockProd.stock_qty },
-          alternatives: mockAlts
-        });
-      } else {
-        fetch(`${BACKEND_URL}/api/products/${selectedSku}?channel=${channel}`)
-          .then(res => res.json())
-          .then(data => setDetailedProduct(data))
-          .catch(err => console.error("Error fetching detailed product:", err));
-      }
+      fetch(`${BACKEND_URL}/api/products/${selectedSku}?channel=${channel}`)
+        .then(res => res.json())
+        .then(data => setDetailedProduct(data))
+        .catch(err => console.error("Error fetching detailed product:", err));
     } else {
       setDetailedProduct(null);
     }
@@ -1011,39 +574,36 @@ function App() {
 
   const handleAddRecipeIngredients = (ingredients, e) => {
     if (e) e.stopPropagation();
-    const allAvailable = [...products, ...MOCK_BEVERAGES, ...MOCK_SNACKS, ...MOCK_BAKERY, ...MOCK_HOUSEHOLD, ...MOCK_BABY, ...MOCK_PET, ...MOCK_QATARI_PRODUCTS];
-    const itemsToAdd = [];
-
-    ingredients.forEach(sku => {
-      // Look up inside all available products
-      const match = allAvailable.find(p => p.sku === sku);
-      if (match && match.stock_qty !== 0) {
-        itemsToAdd.push(match);
+    Promise.all(
+      ingredients.map(sku =>
+        fetch(`${BACKEND_URL}/api/products/${sku}?channel=${channel}`)
+          .then(res => res.json())
+          .catch(() => null)
+      )
+    ).then(fetchedProducts => {
+      const validProducts = fetchedProducts.filter(p => p && p.sku && p.price !== undefined);
+      if (validProducts.length === 0) {
+        alert("All ingredients for this recipe are currently out of stock!");
+        return;
       }
-    });
-
-    if (itemsToAdd.length === 0) {
-      alert("All ingredients for this recipe are currently out of stock!");
-      return;
-    }
-
-    setCart(prev => {
-      let updated = [...prev];
-      itemsToAdd.forEach(p => {
-        const existingIdx = updated.findIndex(item => item.product.sku === p.sku);
-        if (existingIdx !== -1) {
-          updated[existingIdx] = {
-            ...updated[existingIdx],
-            qty: updated[existingIdx].qty + 1
-          };
-        } else {
-          updated.push({ product: p, qty: 1 });
-        }
+      
+      setCart(prev => {
+        let updated = [...prev];
+        validProducts.forEach(p => {
+          const existingIdx = updated.findIndex(item => item.product.sku === p.sku);
+          if (existingIdx !== -1) {
+            updated[existingIdx] = {
+              ...updated[existingIdx],
+              qty: updated[existingIdx].qty + 1
+            };
+          } else {
+            updated.push({ product: p, qty: 1 });
+          }
+        });
+        return updated;
       });
-      return updated;
+      alert(`Added ${validProducts.length} ingredient(s) to your cart!`);
     });
-
-    alert(`Successfully added ${itemsToAdd.length} fresh ingredients to your cart!`);
   };
 
 
@@ -1516,23 +1076,23 @@ function App() {
                       {
                         title: "Classic Mediterranean Pasta",
                         tag: "Dinner Meal Bundle",
-                        ingredients: ["G1", "G3", "P1", "P2", "P5", "G2"],
-                        ingredientNames: ["Spaghetti", "Tomato Sauce", "Tomatoes", "Basil", "Garlic", "Olive Oil"],
-                        price: 18.44
+                        ingredients: ["5000157026224", "6281020101111", "9911054000000", "8006830991763", "9910815000000", "6281011135897"],
+                        ingredientNames: ["Heinz Spaghetti", "Tomato Sauce", "Tomatoes", "Basil Oil", "Garlic", "Olive Oil"],
+                        price: 23.97
                       },
                       {
                         title: "Healthy Berry Yogurt Bowl",
                         tag: "Breakfast / Snack",
-                        ingredients: ["D3", "P4", "D5"],
-                        ingredientNames: ["Greek Yogurt", "Bananas", "Almond Milk"],
-                        price: 6.47
+                        ingredients: ["9504000172572", "9911328000000", "3610340668906"],
+                        ingredientNames: ["Plain Yogurt", "Ecuador Bananas", "Almond Milk Care"],
+                        price: 7.83
                       },
                       {
                         title: "Fresh Avocado Green Salad",
                         tag: "Vegan / Gluten-Free",
-                        ingredients: ["P3", "P1", "P7", "G2", "P8"],
-                        ingredientNames: ["Spinach", "Tomatoes", "Avocado", "Olive Oil", "Lemon"],
-                        price: 22.94
+                        ingredients: ["5032722305922", "9911054000000", "9910009000000", "6281011135897", "9910241000000"],
+                        ingredientNames: ["Biona Spinach", "Tomatoes", "Kenya Avocado", "Olive Oil", "Egypt Lemon"],
+                        price: 21.84
                       }
                     ].map(recipe => (
                       <div key={recipe.title} className="recipe-card">
