@@ -237,11 +237,12 @@ def map_ingredients_to_skus(ingredient_list):
     conn.close()
     return mapping
 
-def get_customer_recommendations(customer_id, category=None, channel='online', in_stock_only=True):
+def get_customer_recommendations(customer_id, category=None, query_str=None, channel='online', in_stock_only=True):
     """
     Personalized recommendations for a customer.
     Applies customer preferences (allergies, diets) as strict filters.
     Ranks products by customer's purchase frequency, filtered by in-stock inventory.
+    Biased by active search query terms for relevance, falling back to category.
     """
     conn = get_connection()
     conn.row_factory = dict_factory
@@ -270,22 +271,52 @@ def get_customer_recommendations(customer_id, category=None, channel='online', i
     )
     purchase_counts = {row['sku']: row['buy_count'] for row in cursor.fetchall()}
     
-    # 3. Fetch candidate products (optionally in category) that are in stock
-    query = """
-        SELECT p.*, i.stock_qty, i.channel 
-        FROM products p
-        JOIN inventory i ON p.sku = i.sku
-        WHERE i.channel = ?
-    """
-    params = [channel]
-    if in_stock_only:
-        query += " AND i.stock_qty > 0"
-    if category:
-        query += " AND p.category = ?"
-        params.append(category)
+    # 3. Fetch candidate products matching active query terms if provided
+    candidates = []
+    if query_str:
+        words = [w.strip("()?.!,;") for w in query_str.lower().split()]
+        # Remove common stopwords to get clean keywords
+        stop_words = {"need", "want", "i", "get", "find", "search", "show", "me", "some", "recipe", "how", "make", "cook", "to", "for", "with"}
+        keywords = [w for w in words if len(w) > 2 and w not in stop_words]
         
-    cursor.execute(query, params)
-    candidates = cursor.fetchall()
+        if keywords:
+            query = """
+                SELECT p.*, i.stock_qty, i.channel 
+                FROM products p
+                JOIN inventory i ON p.sku = i.sku
+                WHERE i.channel = ?
+            """
+            params = [channel]
+            if in_stock_only:
+                query += " AND i.stock_qty > 0"
+                
+            like_clauses = " OR ".join("(LOWER(p.name) LIKE ? OR LOWER(p.subcategory) LIKE ?)" for _ in keywords)
+            query += f" AND ({like_clauses})"
+            for kw in keywords:
+                params.append(f"%{kw}%")
+                params.append(f"%{kw}%")
+                
+            cursor.execute(query, params)
+            candidates = cursor.fetchall()
+            
+    # Fallback to category if no keyword candidates found, or get all candidates if neither is specified
+    if not candidates:
+        query = """
+            SELECT p.*, i.stock_qty, i.channel 
+            FROM products p
+            JOIN inventory i ON p.sku = i.sku
+            WHERE i.channel = ?
+        """
+        params = [channel]
+        if in_stock_only:
+            query += " AND i.stock_qty > 0"
+        if category:
+            query += " AND p.category = ?"
+            params.append(category)
+            
+        cursor.execute(query, params)
+        candidates = cursor.fetchall()
+        
     conn.close()
     
     # 4. Filter and rank candidates in Python based on preferences
