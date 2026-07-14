@@ -44,11 +44,14 @@ def search_products(category=None, query_str=None, attributes=None, price_max=No
         term_filters = []
         if query_str:
             term_filters.append("(p.name LIKE ? OR p.subcategory LIKE ? OR p.brand LIKE ?)")
-            term = f"%{query_str}%"
+            # Normalize spelling variations (e.g. briyani -> biryani)
+            norm_query = query_str.lower().replace("briyani", "biryani").replace("spageti", "spaghetti")
+            term = f"%{norm_query}%"
             params.extend([term, term, term])
         if raw_query:
             term_filters.append("(p.name LIKE ? OR p.subcategory LIKE ? OR p.brand LIKE ?)")
-            term = f"%{raw_query}%"
+            norm_raw = raw_query.lower().replace("briyani", "biryani").replace("spageti", "spaghetti")
+            term = f"%{norm_raw}%"
             params.extend([term, term, term])
         query += " AND (" + " OR ".join(term_filters) + ")"
         
