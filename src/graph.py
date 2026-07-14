@@ -290,10 +290,32 @@ async def recipe_generator_node(state: AgentState) -> Dict[str, Any]:
     diet = profile.get("dietary_preference", "none")
     avoid_list = profile.get("avoid_list") or []
     
-    # Fetch in-stock products (limited to 50 items to avoid prompt bloat) to bias the recipe toward available catalog items
+    # Fetch in-stock products to bias the recipe toward available catalog items
     try:
-        available_products = db.search_products(channel=channel, limit=50)
-        product_names = [p['name'] for p in available_products if p.get('stock_qty', 0) > 0]
+        # Search for products matching dish_name terms
+        matched_products = []
+        if dish_name:
+            words = [w.strip("()?.!,;") for w in dish_name.lower().split()]
+            for word in words:
+                if len(word) > 2 and word not in {"recipe", "how", "make", "cook", "to", "for", "with"}:
+                    matched_products.extend(db.search_products(query_str=word, channel=channel, limit=15))
+        
+        # Also fetch popular staple candidates (pasta, rice, sauce, oil, etc.)
+        staples = []
+        for staple_term in ["pasta", "rice", "sauce", "milk", "cheese", "vegetable", "chicken", "oil"]:
+            staples.extend(db.search_products(query_str=staple_term, channel=channel, limit=5))
+            
+        all_candidates = matched_products + staples
+        
+        # Deduplicate and limit to 50 in-stock items
+        seen_skus = set()
+        available_products = []
+        for p in all_candidates:
+            if p['sku'] not in seen_skus and p.get('stock_qty', 0) > 0:
+                seen_skus.add(p['sku'])
+                available_products.append(p)
+                
+        product_names = [p['name'] for p in available_products]
         product_list_str = ", ".join(product_names)
     except Exception as e:
         logger.error(f"Error fetching product list for recipe bias: {e}")
@@ -317,7 +339,8 @@ async def recipe_generator_node(state: AgentState) -> Dict[str, Any]:
     Keep the ingredient list small (5 items or less).
     Respond STRICTLY in JSON format with the following keys:
     - "dish_name": string
-    - "ingredients": list of strings (e.g. ["Spaghetti Pasta", "Classic Tomato Sauce", "Roma Tomatoes", "Fresh Basil", "Fresh Garlic Bulb"])
+    - "ingredients": list of strings (e.g. ["Heinz Spaghetti 400 g x 4", "Luna Tomato Sauce 70g", "Tomato Turkey"])
+      IMPORTANT: If any suitable ingredients are listed in the available products list above, you MUST write their names EXACTLY as they appear in that list (case-sensitive, with all details/weights). Otherwise, write the generic ingredient name.
     """
     
     system_instruction = "You are a recipe ingredient extractor. Output ONLY the JSON structure."
