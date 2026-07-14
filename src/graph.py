@@ -481,12 +481,6 @@ async def tier2_personalization_node(state: AgentState) -> Dict[str, Any]:
     customer_id = state['customer_id']
     resolved_skus = state.get("resolved_skus", [])
     
-    # Extract active search keyword/dish query context
-    search_query = state.get("search_query")
-    dish_name = state.get("dish_name")
-    raw_text = state['raw_text']
-    query_str = search_query or dish_name or raw_text
-    
     # 1. Determine category of query based on resolved SKUs
     category = state.get("search_category")
     if not category and resolved_skus:
@@ -503,18 +497,18 @@ async def tier2_personalization_node(state: AgentState) -> Dict[str, Any]:
             pass
             
     category = category or "Produce" # Default fallback
-    logger.info(f"--- TIER 2 PERSONALIZATION NODE (CAP 3) --- Category: {category}, Query: {query_str}")
+    logger.info(f"--- TIER 2 PERSONALIZATION NODE (CAP 3) --- Category: {category}")
     
     # Mock latency test: if query contains "timeout", sleep 2 seconds
     if "timeout" in state['raw_text'].lower():
         logger.info("Simulating latency in Tier 2 personalization...")
         await asyncio.sleep(2.0)
         
-    # 2. Get personalized recommendations biased by active search context (in-stock only)
+    # 2. Get personalized recommendations for category (in-stock only)
     channel = state.get("channel", "online")
-    recs = db.get_customer_recommendations(customer_id, category=category, query_str=query_str, channel=channel)
+    recs = db.get_customer_recommendations(customer_id, category=category, channel=channel)
     recommended_skus = [p['sku'] for p in recs]
-    reason = f"Top picks matching your search preferences."
+    reason = f"Top picks in {category} matching your preferences."
     
     return {
         "recommended_skus": recommended_skus,
