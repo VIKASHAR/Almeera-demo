@@ -707,7 +707,7 @@ def sku_check_routing(state: AgentState) -> List[str]:
 
 # --- Graph Definition ---
 
-def build_graph() -> StateGraph:
+def build_graph(checkpointer=None) -> StateGraph:
     workflow = StateGraph(AgentState)
     
     # Add Nodes
