@@ -1,0 +1,24 @@
+<svg width="170" height="44" viewBox="0 0 180 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- lime green pebble background -->
+  <path d="M 5 22 C 3 11 11 3 23 3 C 35 3 43 11 43 22 C 43 33 35 41 23 41 C 11 41 7 33 5 22 Z" fill="#acd600" />
+  
+  <!-- Dark green leaf branch ribs -->
+  <path d="M 15 34 C 16 26 22 18 31 10" stroke="#005A36" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  
+  <!-- Left side rib curves -->
+  <path d="M 28 12 C 24 13 20 15 17 19" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+  <path d="M 24 16 C 20 18 17 21 14 25" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+  <path d="M 20 21 C 17 23 14 26 12 31" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+  <path d="M 17 26 C 14 28 12 31 10 35" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+  
+  <!-- Right side rib curves -->
+  <path d="M 28 12 C 29 15 29 19 28 22" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+  <path d="M 24 16 C 26 19 26 23 25 26" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+  <path d="M 20 21 C 22 24 22 27 21 31" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+  <path d="M 17 26 C 19 29 19 32 18 35" stroke="#005A36" stroke-width="2.2" stroke-linecap="round" fill="none" />
+
+  <!-- Arabic text: الميرة (top) -->
+  <text x="50" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#005A36">الميرة</text>
+  <!-- English text: almeera (bottom, lowercase bold) -->
+  <text x="50" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#005A36" letter-spacing="-0.5">almeera</text>
+</svg>
