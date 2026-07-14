@@ -32,7 +32,7 @@ def search_products(category=None, query_str=None, attributes=None, price_max=No
         SELECT p.*, i.stock_qty, i.channel 
         FROM products p
         LEFT JOIN inventory i ON p.sku = i.sku AND i.channel = ?
-        WHERE 1=1
+        WHERE p.price > 0.0
     """
     params = [channel]
     
@@ -90,7 +90,7 @@ def get_products_by_skus(sku_list):
     conn.row_factory = dict_factory
     cursor = conn.cursor()
     placeholders = ",".join("?" for _ in sku_list)
-    query = f"SELECT * FROM products WHERE sku IN ({placeholders})"
+    query = f"SELECT * FROM products WHERE sku IN ({placeholders}) AND price > 0.0"
     cursor.execute(query, list(sku_list))
     rows = cursor.fetchall()
     conn.close()
@@ -116,7 +116,7 @@ def get_alternatives(sku, in_stock_only=True, channel='online'):
         SELECT p.*, i.stock_qty, i.channel 
         FROM products p
         JOIN inventory i ON p.sku = i.sku AND i.channel = ?
-        WHERE p.subcategory = ? AND p.sku != ?
+        WHERE p.subcategory = ? AND p.sku != ? AND p.price > 0.0
     """
     params = [channel, target['subcategory'], sku]
     

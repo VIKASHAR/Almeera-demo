@@ -65,7 +65,7 @@ def seed_database(db_path="db/mvp_demo.db", schema_path="db/schema.sql"):
         try:
             orig_conn = sqlite3.connect(orig_db_path)
             orig_cursor = orig_conn.cursor()
-            orig_cursor.execute("SELECT id, name, price, image_url, product_url, category FROM products")
+            orig_cursor.execute("SELECT id, name, price, image_url, product_url, category FROM products WHERE price IS NOT NULL AND price > 0.0")
             rows = orig_cursor.fetchall()
             
             orig_count = 0

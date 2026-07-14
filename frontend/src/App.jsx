@@ -438,7 +438,10 @@ function App() {
     if (selectedSku) {
       fetch(`${BACKEND_URL}/api/products/${selectedSku}?channel=${channel}`)
         .then(res => res.json())
-        .then(data => setDetailedProduct(data))
+        .then(data => {
+          setDetailedProduct(data);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
         .catch(err => console.error("Error fetching detailed product:", err));
     } else {
       setDetailedProduct(null);
@@ -1516,7 +1519,7 @@ function App() {
                                 const finalPrice = p.price * (1 - discountPct);
                                 
                                 return (
-                                  <div key={sku} className="compact-product-row" onClick={() => { setSelectedSku(sku); setView('product'); setIsChatOpen(false); }}>
+                                  <div key={sku} className="compact-product-row" onClick={() => { setSelectedSku(sku); setView('product'); }}>
                                     <div className="compact-row-left">
                                       <span className="compact-brand">{p.brand}</span>
                                       <div className="compact-name-row">
@@ -1558,7 +1561,7 @@ function App() {
                                 const finalPrice = p.price * (1 - discountPct);
                                 
                                 return (
-                                  <div key={sku} className="compact-product-row personalized" onClick={() => { setSelectedSku(sku); setView('product'); setIsChatOpen(false); }}>
+                                  <div key={sku} className="compact-product-row personalized" onClick={() => { setSelectedSku(sku); setView('product'); }}>
                                     <div className="compact-row-left">
                                       <span className="compact-brand">{p.brand}</span>
                                       <div className="compact-name-row">
@@ -1601,7 +1604,7 @@ function App() {
                                 const finalPrice = p.price * (1 - discountPct);
                                 
                                 return (
-                                  <div key={sku} className="compact-product-row combo" onClick={() => { setSelectedSku(sku); setView('product'); setIsChatOpen(false); }}>
+                                  <div key={sku} className="compact-product-row combo" onClick={() => { setSelectedSku(sku); setView('product'); }}>
                                     <div className="compact-row-left">
                                       <span className="compact-brand">{p.brand}</span>
                                       <div className="compact-name-row">
