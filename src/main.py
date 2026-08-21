@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Grocery Smart Chatbot Backend", version="1.0.0")
 
-# Enable CORS for local development (specific origins only, no wildcard with credentials)
+# Enable CORS for frontend deployments (allowing all origins for Vercel/Render)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
