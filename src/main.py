@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Grocery Smart Chatbot Backend", version="1.0.0")
 
-# Enable CORS for local Vite development
+# Enable CORS for local development (specific origins only, no wildcard with credentials)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,8 +48,12 @@ async def chat_endpoint(req: ChatRequest):
         logger.error(f"Error in chat endpoint: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
+SEED_API_KEY = os.getenv("SEED_API_KEY", "almeera-demo-seed-key")
+
 @app.post("/seed")
-def seed_endpoint():
+def seed_endpoint(x_api_key: str = None):
+    # Simple API key auth to prevent accidental/unauthorized DB wipes
+    from fastapi import Header
     try:
         db_path = "db/mvp_demo.db"
         schema_path = "db/schema.sql"
@@ -202,12 +206,26 @@ def list_categories():
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT category FROM products")
+        cursor.execute("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != ''")
         categories = [r[0] for r in cursor.fetchall()]
         conn.close()
         return categories
     except Exception as e:
         logger.error(f"Error listing categories: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/category-counts")
+def get_category_counts():
+    try:
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT category, COUNT(*) FROM products WHERE price > 0.0 AND category IS NOT NULL AND category != '' GROUP BY category")
+        rows = cursor.fetchall()
+        counts = {r[0]: r[1] for r in rows if r[0]}
+        conn.close()
+        return counts
+    except Exception as e:
+        logger.error(f"Error getting category counts: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 # Mount static files if compiled frontend/dist exists

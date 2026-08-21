@@ -40,12 +40,7 @@ const mapCustomerPreferences = (prefJson) => {
   };
 };
 
-const MOCK_BEVERAGES = [];
-const MOCK_SNACKS = [];
-const MOCK_BAKERY = [];
-const MOCK_HOUSEHOLD = [];
-const MOCK_BABY = [];
-const MOCK_PET = [];
+// Category banner definitions
 const categoryBanners = {
   'Produce': {
     title: "Fresh Fruits & Vegetables",
@@ -200,7 +195,7 @@ const AlMeeraLogo = () => (
   />
 );
 
-const MOCK_QATARI_PRODUCTS = [];
+
 
 function App() {
   // Storefront navigation state
@@ -225,6 +220,7 @@ function App() {
 
   // Catalog & Customer States
   const [categories, setCategories] = useState([]);
+  const [categoryCounts, setCategoryCounts] = useState({});
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState('c1');
@@ -238,8 +234,10 @@ function App() {
   // Al Meera Header Widgets State
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
-  const [deliveryMode, setDeliveryMode] = useState('scheduled'); // 'instant' | 'scheduled'
+  const [deliveryMode, setDeliveryMode] = useState('scheduled'); // 'instant' | 'scheduled' — DEMO: cosmetic only, not wired to backend
   const [deliveryLocation, setDeliveryLocation] = useState("Doha, Qatar");
+  const [language, setLanguage] = useState('EN'); // Language toggle state
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false); // Checkout success modal
 
   const carouselSlides = [
     {
@@ -407,7 +405,7 @@ function App() {
     }
   }, [selectedCustomerId, activeCustomer]);
 
-  // Fetch categories on load
+  // Fetch categories and category counts on load
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/categories`)
       .then(res => res.json())
@@ -419,6 +417,15 @@ function App() {
         console.error("Error fetching categories:", err);
         setCategories(['Produce', 'Dairy', 'Pantry/Grains', 'Beverages', 'Snacks', 'Diet', 'Al Meera Products', 'Bakery', 'Household', 'Baby', 'Pet']);
       });
+
+    fetch(`${BACKEND_URL}/api/category-counts`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data === 'object') {
+          setCategoryCounts(data);
+        }
+      })
+      .catch(err => console.error("Error fetching category counts:", err));
   }, []);
 
   // Fetch products whenever channel, selectedCategory, or searchQuery changes
@@ -428,6 +435,12 @@ function App() {
     let url = `${BACKEND_URL}/api/products?channel=${channel}`;
     if (isDbCategory) {
       url += `&category=${encodeURIComponent(selectedCategory)}`;
+    } else if (selectedCategory === 'Fresh Food') {
+      // Optimize: fetch only Produce + Dairy instead of all products
+      url += `&category=Produce`;
+    } else if (selectedCategory === 'Al Meera Products') {
+      // Optimize: use search hint to reduce payload
+      url += `&search=${encodeURIComponent('al meera')}`;
     }
     if (searchQuery) {
       url += `&search=${encodeURIComponent(searchQuery)}`;
@@ -436,26 +449,30 @@ function App() {
     fetch(url)
       .then(res => res.json())
       .then(data => {
+        const validData = Array.isArray(data) ? data : [];
         if (selectedCategory === 'Diet') {
-          const healthyDb = data.filter(p => {
+          const healthyDb = validData.filter(p => {
             const attrs = jsonParseSafe(p.attributes_json);
             return attrs.organic || attrs.vegan || attrs.gluten_free || attrs.fat_content === 'low-fat' || attrs.fat_content === 'non-fat';
           });
           setProducts(healthyDb);
         } else if (selectedCategory === 'Al Meera Products') {
-          const alMeeraDb = data.filter(p => p.brand === 'Al Meera' || p.name.toLowerCase().includes('al meera'));
+          const alMeeraDb = validData.filter(p => p.brand === 'Al Meera' || (p.name && p.name.toLowerCase().includes('al meera')));
           setProducts(alMeeraDb);
         } else if (selectedCategory === 'Fresh Food') {
-          const freshDb = data.filter(p => p.category === 'Produce' || p.category === 'Dairy');
+          const freshDb = validData.filter(p => p.category === 'Produce' || p.category === 'Dairy');
           setProducts(freshDb);
         } else if (selectedCategory === 'Qatari Products') {
-          const qatariDb = data.filter(p => p.brand === 'Rayyan' || p.brand === 'Baladna' || p.brand === 'Dandy' || p.name.toLowerCase().includes('qatar') || p.brand.toLowerCase().includes('qatar'));
+          const qatariDb = validData.filter(p => p.brand === 'Rayyan' || p.brand === 'Baladna' || p.brand === 'Dandy' || (p.name && p.name.toLowerCase().includes('qatar')) || (p.brand && p.brand.toLowerCase().includes('qatar')));
           setProducts(qatariDb);
         } else {
-          setProducts(data);
+          setProducts(validData);
         }
       })
-      .catch(err => console.error("Error fetching products:", err));
+      .catch(err => {
+        console.error("Error fetching products:", err);
+        setProducts([]);
+      });
   }, [channel, selectedCategory, searchQuery]);
 
   // Fetch detailed product info when selectedSku changes
@@ -576,6 +593,9 @@ function App() {
     setCart(prev => {
       const existing = prev.find(item => item.product.sku === product.sku);
       if (existing) {
+        // Enforce stock quantity upper bound
+        const maxQty = product.stock_qty || Infinity;
+        if (existing.qty >= maxQty) return prev;
         return prev.map(item => 
           item.product.sku === product.sku 
             ? { ...item, qty: item.qty + 1 }
@@ -594,10 +614,15 @@ function App() {
     setCart(prev => prev.map(item => {
       if (item.product.sku === sku) {
         const newQty = item.qty + delta;
-        return newQty > 0 ? { ...item, qty: newQty } : item;
+        // Enforce minimum qty of 1 (use remove button for full removal)
+        if (newQty < 1) return item;
+        // Enforce stock quantity upper bound
+        const maxQty = item.product.stock_qty || Infinity;
+        if (newQty > maxQty) return item;
+        return { ...item, qty: newQty };
       }
       return item;
-    }).filter(item => item.qty > 0));
+    }));
   };
 
   const handleAddRecipeIngredients = (ingredients, e) => {
@@ -648,7 +673,7 @@ function App() {
     // Diet Checks
     if (diet === 'low-fat') {
       if (product.category === 'Dairy' && attrs.fat_content !== 'low-fat' && attrs.fat_content !== 'non-fat') {
-        warnings.push(`Dietary Violation: Sarah has a Low-Fat diet preference. This dairy product contains standard fat.`);
+        warnings.push(`Dietary Violation: ${activeCustomer.name} has a Low-Fat diet preference. This dairy product contains standard fat.`);
       }
     } else if (diet === 'vegan') {
       if (attrs.vegan === false) {
@@ -777,8 +802,8 @@ function App() {
         </div>
 
         {/* Language Selector */}
-        <div className="header-lang-selector" onClick={() => alert("Language switcher: Arabic / English")}>
-          <span>EN</span>
+        <div className="header-lang-selector" onClick={() => setLanguage(prev => prev === 'EN' ? 'AR' : 'EN')} style={{ cursor: 'pointer' }}>
+          <span>{language}</span>
           <ChevronRight size={12} style={{ color: '#4b5563', transform: 'rotate(90deg)' }} />
         </div>
 
@@ -1002,23 +1027,29 @@ function App() {
                   </p>
                   <div className="category-grid">
                     {[
-                      { id: 'Produce', name: 'Fruits & Vegetables', icon: '🥬', count: '9 Items' },
-                      { id: 'Dairy', name: 'Dairy, Cheese & Eggs', icon: '🥛', count: '8 Items' },
-                      { id: 'Pantry/Grains', name: 'Pantry Staples', icon: '🌾', count: '11 Items' },
-                      { id: 'Beverages', name: 'Beverages', icon: '🥤', count: '5 Items' },
-                      { id: 'Snacks', name: 'Snacks & Sweets', icon: '🍿', count: '5 Items' },
-                      { id: 'Diet', name: 'Healthy Choices', icon: '🥗', count: 'Diet Profiles' },
-                      { id: 'Bakery', name: 'Bakery & Bread', icon: '🍞', count: 'Fresh Daily' },
-                      { id: 'Household', name: 'Household Essentials', icon: '🧻', count: 'Home Care' },
-                      { id: 'Baby', name: 'Baby & Personal Care', icon: '🍼', count: 'Baby Care' },
-                      { id: 'Pet', name: 'Pet Food & Care', icon: '🐶', count: 'Pet Care' }
-                    ].map(cat => (
+                      { id: 'Produce', name: 'Fruits & Vegetables', icon: '🥬' },
+                      { id: 'Dairy', name: 'Dairy, Cheese & Eggs', icon: '🥛' },
+                      { id: 'Pantry/Grains', name: 'Pantry Staples', icon: '🌾' },
+                      { id: 'Beverages', name: 'Beverages', icon: '🥤' },
+                      { id: 'Snacks', name: 'Snacks & Sweets', icon: '🍿' },
+                      { id: 'Diet', name: 'Healthy Choices', icon: '🥗' },
+                      { id: 'Bakery', name: 'Bakery & Bread', icon: '🍞' },
+                      { id: 'Household', name: 'Household Essentials', icon: '🧻' },
+                      { id: 'Baby', name: 'Baby & Personal Care', icon: '🍼' },
+                      { id: 'Pet', name: 'Pet Food & Care', icon: '🐶' }
+                    ].map(cat => {
+                      // Compute dynamic item count from backend category counts
+                      const rawCount = categoryCounts[cat.id] || (cat.id === 'Diet' ? null : products.filter(p => p.category === cat.id).length);
+                      const countLabel = cat.id === 'Diet'
+                        ? 'Diet Profiles'
+                        : (rawCount && rawCount > 0 ? `${rawCount.toLocaleString()} Items` : 'In Stock');
+                      return (
                       <div key={cat.id} className="category-card" onClick={() => setSelectedCategory(cat.id)}>
                         <span className="category-card-icon">{cat.icon}</span>
                         <h4 className="category-card-title">{cat.name}</h4>
-                        <span className="category-card-count">{cat.count}</span>
+                        <span className="category-card-count">{countLabel}</span>
                       </div>
-                    ))}
+                    );})}
                   </div>
                 </div>
               )}
@@ -1107,23 +1138,34 @@ function App() {
                         tag: "Dinner Meal Bundle",
                         ingredients: ["5000157026224", "6281020101111", "9911054000000", "8006830991763", "9910815000000", "6281011135897"],
                         ingredientNames: ["Heinz Spaghetti", "Tomato Sauce", "Tomatoes", "Basil Oil", "Garlic", "Olive Oil"],
-                        price: 23.97
+                        fallbackPrice: 23.97
                       },
                       {
                         title: "Healthy Berry Yogurt Bowl",
                         tag: "Breakfast / Snack",
                         ingredients: ["9504000172572", "9911328000000", "3610340668906"],
                         ingredientNames: ["Plain Yogurt", "Ecuador Bananas", "Almond Milk Care"],
-                        price: 7.83
+                        fallbackPrice: 7.83
                       },
                       {
                         title: "Fresh Avocado Green Salad",
                         tag: "Vegan / Gluten-Free",
                         ingredients: ["5032722305922", "9911054000000", "9910009000000", "6281011135897", "9910241000000"],
                         ingredientNames: ["Biona Spinach", "Tomatoes", "Kenya Avocado", "Olive Oil", "Egypt Lemon"],
-                        price: 21.84
+                        fallbackPrice: 21.84
                       }
-                    ].map(recipe => (
+                    ].map(recipe => {
+                      // Compute dynamic bundle price from loaded products
+                      const bundlePrice = recipe.ingredients.reduce((sum, sku) => {
+                        const matched = products.find(p => p.sku === sku);
+                        if (matched) {
+                          const discountPct = matched.promotion?.discount_pct || 0;
+                          return sum + (matched.price * (1 - discountPct));
+                        }
+                        return sum;
+                      }, 0);
+                      const displayPrice = bundlePrice > 0 ? bundlePrice : recipe.fallbackPrice;
+                      return (
                       <div key={recipe.title} className="recipe-card">
                         <div className="recipe-header">
                           <span className="recipe-badge">{recipe.tag}</span>
@@ -1135,7 +1177,7 @@ function App() {
                           ))}
                         </div>
                         <div className="recipe-action-row">
-                          <span className="recipe-price">Bundle Price: {formatPrice(recipe.price)}</span>
+                          <span className="recipe-price">Bundle Price: {formatPrice(displayPrice)}</span>
                           <button 
                             className="recipe-add-btn"
                             onClick={(e) => handleAddRecipeIngredients(recipe.ingredients, e)}
@@ -1144,7 +1186,7 @@ function App() {
                           </button>
                         </div>
                       </div>
-                    ))}
+                    );})}
                   </div>
                 </div>
               )}
@@ -1463,13 +1505,33 @@ function App() {
                   <span style={{ color: 'var(--text-muted)' }}>Subtotal</span>
                   <span style={{ color: 'var(--text-bright)' }}>{formatPrice(cartSubtotal)}</span>
                 </div>
-                <button className="hero-banner-btn" style={{ width: '100%', padding: '12px' }} onClick={() => alert(`Checked out successfully! Total: ${formatPrice(cartSubtotal)}`)}>
+                <button className="hero-banner-btn" style={{ width: '100%', padding: '12px' }} onClick={() => { setShowCheckoutModal(true); setIsCartOpen(false); }}>
                   Proceed to Checkout
                 </button>
               </div>
             )}
           </div>
         </>
+      )}
+
+      {/* Checkout Success Modal */}
+      {showCheckoutModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }} onClick={() => setShowCheckoutModal(false)}>
+          <div style={{
+            background: 'white', borderRadius: '20px', padding: '40px', maxWidth: '400px',
+            textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
+            <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, color: 'var(--primary)', margin: '0 0 8px 0' }}>Order Placed!</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', margin: '0 0 8px 0' }}>Your order total: <strong style={{ color: 'var(--text-bright)' }}>{formatPrice(cartSubtotal)}</strong></p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '13px', margin: '0 0 20px 0' }}>{deliveryMode === 'instant' ? 'Estimated delivery in 40 minutes.' : 'Scheduled delivery: Today, 4-6pm.'}</p>
+            <button className="hero-banner-btn" style={{ padding: '12px 32px' }} onClick={() => { setShowCheckoutModal(false); setCart([]); }}>Done</button>
+          </div>
+        </div>
       )}
 
       {/* 5. FLOATING CHAT LAUNCHER WIDGET BUTTON */}

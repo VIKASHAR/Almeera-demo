@@ -77,12 +77,24 @@ def seed_database(db_path="db/mvp_demo.db", schema_path="db/schema.sql"):
                 if not sku:
                     sku = f"OP-{id_val}"
                     
-                # Map Category & Subcategory
+                # Map Category & Subcategory based on Product Name and Category String
                 c = category_str.lower() if category_str else ""
-                cat = "Pantry/Grains"
-                subcat = "General"
+                n = name.lower() if name else ""
                 
-                if any(k in c for k in ["fruit", "vegetable", "produce", "salad"]):
+                # First check Product Name for explicit category markers
+                if any(k in n for k in ["chicken", "beef", "lamb", "mutton", "fish", "seafood", "turkey", "drumstick", "thigh", "hotdog", "hotdogs", "mortadella", "liver", "hearts", "gizzard", "steak", "mince", "prawn", "shrimp"]):
+                    cat = "Meat & Seafood"
+                elif any(k in n for k in ["bread", "toast", "bun", "loaf", "croissant", "bakery", "arabic bread", "pita", "flatbread", "baguette"]):
+                    cat = "Bakery"
+                elif any(k in n for k in ["milk", "cheese", "yogurt", "butter", "laban", "cream", "ghee"]):
+                    cat = "Dairy"
+                elif any(k in n for k in ["carpet", "petrol", "pet jar", "pet bottle", "detergent", "cleaner", "towel", "tissue", "soap", "deodorant", "shampoo", "staple", "flexiloop"]):
+                    cat = "Household"
+                elif any(k in n for k in ["cat food", "dog food", "pet food", "cat litter", "whiskas", "friskies", "purina", "pedigree", "plaisir", "kitti", "dog chew", "cat toy", "pet collar", "dog play", "catnip"]):
+                    cat = "Pet"
+                elif any(k in c for k in ["meat", "seafood", "poultry", "fish"]):
+                    cat = "Meat & Seafood"
+                elif any(k in c for k in ["fruit", "vegetable", "produce", "salad"]):
                     cat = "Produce"
                 elif any(k in c for k in ["dairy", "milk", "cheese", "yogurt", "butter", "laban", "cream", "ghee"]):
                     cat = "Dairy"
@@ -94,14 +106,13 @@ def seed_database(db_path="db/mvp_demo.db", schema_path="db/schema.sql"):
                     cat = "Snacks"
                 elif any(k in c for k in ["baby", "wipes", "diaper"]):
                     cat = "Baby"
-                elif any(k in c for k in ["pet", "dog", "cat"]):
+                elif ("pet" in c.split() or "pets" in c.split() or any(k in c for k in ["dog food", "cat food", "pet food", "cat litter"])):
                     cat = "Pet"
                 elif any(k in c for k in ["cleaning", "laundry", "household", "cleaner", "tissue", "detergent", "wash", "soap", "dishwash"]):
                     cat = "Household"
                 elif any(k in c for k in ["pantry", "grain", "rice", "pasta", "noodle", "sauce", "oil", "spice", "seasoning", "flour", "canned", "jarred", "condiment"]):
                     cat = "Pantry/Grains"
                 else:
-                    # Fallback based on top level category segment
                     parts = category_str.split(" > ") if category_str else []
                     if parts:
                         top = parts[0].lower()

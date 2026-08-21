@@ -1,0 +1,314 @@
+[
+  {
+    "id": "P01_c3_budget_under_2",
+    "status": "PASS",
+    "duration": 4.7,
+    "persona": "Charlie (Standard)",
+    "query": "show me items under 2 QAR",
+    "category_test": "Price Budget",
+    "matched_products": [
+      "Qbake Brown Bread 3 Pieces",
+      "Al-Arz Arabic Brown Bread 4 Pieces",
+      "Putok Bread"
+    ],
+    "text": "Here are several great items we found for you under 2 QAR. Enjoy browsing these budget-friendly options!"
+  },
+  {
+    "id": "P02_c1_budget_pet_15",
+    "status": "PASS",
+    "duration": 3.55,
+    "persona": "Alice (Low-Fat, Nut Allergy)",
+    "query": "pet food under 15 QAR",
+    "category_test": "Price Budget + Category",
+    "matched_products": [
+      "Whiskas Tasty Mix Junior Tuna & Salmon 70g x 4",
+      "Nobilus Ultra Premium Dog Snack Rabbit Fillets 80g",
+      "Whiskas Tuna in Jelly Cat Food 80g"
+    ],
+    "text": "Here are some great pet food options available in our catalog under 15 QAR, including Whiskas and Nobilus products. We also have personalized suggestions for your furry friends."
+  },
+  {
+    "id": "P03_c2_budget_snacks_5",
+    "status": "FAIL",
+    "duration": 7.02,
+    "persona": "Bob (Vegan)",
+    "query": "snacks under 5 QAR",
+    "category_test": "Price Budget + Vegan",
+    "matched_products": [],
+    "text": "We do not have specific snack items under 5 QAR. Consider fresh fruit alternatives like Mandarin (3.50 QAR), Apple (3.16 QAR), or Orange (2.68 QAR)."
+  },
+  {
+    "id": "P04_c3_budget_bread_5",
+    "status": "PASS",
+    "duration": 4.14,
+    "persona": "Charlie (Standard)",
+    "query": "fresh bread under 5 QAR",
+    "category_test": "Price Budget + Bakery",
+    "matched_products": [
+      "Wooden Bakery Arabic Pita Xtra-Fiber Bread 420g",
+      "Italian Bakery Slice Mulitgrain Bread Small 320g",
+      "Putok Bread"
+    ],
+    "text": "Here are some fresh bread options available under 5 QAR. We found Wooden Bakery Arabic Pita and Italian Bakery Slice Multigrain, among others."
+  },
+  {
+    "id": "D01_c2_vegan_cheese",
+    "status": "PASS",
+    "duration": 6.5,
+    "persona": "Bob (Vegan)",
+    "query": "find cheese for pasta",
+    "category_test": "Dietary (Vegan)",
+    "matched_products": [
+      "Violife Dairy Free Greek White Creamy 150g"
+    ],
+    "text": "Here's Violife Dairy Free Greek White Creamy. It could be a delicious choice for your pasta dishes!"
+  },
+  {
+    "id": "D02_c2_vegan_milk",
+    "status": "PASS",
+    "duration": 11.33,
+    "persona": "Bob (Vegan)",
+    "query": "show me milk",
+    "category_test": "Dietary (Vegan - OOS Handling)",
+    "matched_products": [],
+    "text": "Milk is currently unavailable. We offer a variety of fresh produce, including Grapes Red China and Apple Red Italy."
+  },
+  {
+    "id": "D03_c1_lowfat_yogurt",
+    "status": "PASS",
+    "duration": 4.59,
+    "persona": "Alice (Low-Fat, Nut Allergy)",
+    "query": "show me yogurt",
+    "category_test": "Dietary (Low-Fat)",
+    "matched_products": [
+      "Dandy Fresh Low Fat Yogurt 170gx6 Pieces",
+      "Dandy Fresh Low Fat Yogurt 170g",
+      "Dandy Fresh Low Fat Yogurt 1kg"
+    ],
+    "text": "Here are several yogurt options available, including Dandy Fresh and Al Maha, which has a 10% discount."
+  },
+  {
+    "id": "D04_c1_nut_allergy_snacks",
+    "status": "PASS",
+    "duration": 5.9,
+    "persona": "Alice (Low-Fat, Nut Allergy)",
+    "query": "find me some snacks or nuts",
+    "category_test": "Allergen (Nut Allergy)",
+    "matched_products": [
+      "Sweet'N Low Sugar Substitute Gold 100s 5.2g",
+      "Kasih Pancake Syrup 710ml",
+      "Pumpkin Seed Kernels"
+    ],
+    "text": "Here are some great snack and nut options we found for you."
+  },
+  {
+    "id": "R01_c1_biryani_lowfat",
+    "status": "PASS",
+    "duration": 12.91,
+    "persona": "Alice (Low-Fat, Nut Allergy)",
+    "query": "how to make biryani?",
+    "category_test": "Recipe + Low-Fat",
+    "matched_products": [
+      "Tilda Grand Extra Long Basmati Rice 5kg",
+      "Al Kabeer Tender Chicken Breast Boneless 1kg",
+      "Eastern Hyderabadi Biryani Spice Mix 60g",
+      "Onion White Spain",
+      "Olive Oil Extra Virgin 1L"
+    ],
+    "text": "To make Low-Fat Chicken Biryani for 2 people (default serving), you'll need 300g Al Kabeer Tender Chicken Breast Boneless, 200g Tilda Grand Extra Long Basmati Rice, 2 tbsp Eastern Hyderabadi Biryani Spice Mix, 1 Onion White Spain, and 1 tbsp Olive Oil Extra Virgin."
+  },
+  {
+    "id": "R02_c2_biryani_vegan",
+    "status": "PASS",
+    "duration": 12.08,
+    "persona": "Bob (Vegan)",
+    "query": "how to make biryani?",
+    "category_test": "Recipe + Vegan",
+    "matched_products": [
+      "Tilda Grand Extra Long Basmati Rice 5kg",
+      "Sunbulah Mixed Vegetables Frozen 450g",
+      "Sunny Blended Vegetable Oil 1.5L",
+      "Eastern Hyderabadi Biryani Spice Mix 60g",
+      "Onion White Spain"
+    ],
+    "text": "To make Biryani for 2 people (default serving \u2014 tell me how many people to adjust quantities), you'll need 200g Tilda Basmati Rice, 1 Onion White Spain, 2 tbsp Eastern Biryani Spice Mix, 200g Sunbulah Mixed Vegetables, and 2 tbsp Sunny Vegetable Oil."
+  },
+  {
+    "id": "R03_c3_biryani_family",
+    "status": "PASS",
+    "duration": 8.8,
+    "persona": "Charlie (Standard)",
+    "query": "recipe for chicken biryani for 4 people",
+    "category_test": "Recipe + Servings",
+    "matched_products": [
+      "Tilda Grand Extra Long Basmati Rice 5kg",
+      "Athba Fresh Chicken Thighs 450g",
+      "Sunny Blended Vegetable Oil 1.5L",
+      "Eastern Hyderabadi Biryani Spice Mix 60g",
+      "Onion White Spain"
+    ],
+    "text": "To make Chicken Biryani for 4, you'll need 500g Athba Fresh Chicken Thighs, 300g Tilda Grand Extra Long Basmati Rice, 3 tbsp Eastern Hyderabadi Biryani Spice Mix, 1 Large Onion White Spain, and 2 tbsp Sunny Blended Vegetable Oil."
+  },
+  {
+    "id": "R04_c1_sandwich_4",
+    "status": "PASS",
+    "duration": 14.88,
+    "persona": "Alice (Low-Fat, Nut Allergy)",
+    "query": "i need to make sandwich for 4 people?",
+    "category_test": "Recipe + Bakery Guard",
+    "matched_products": [
+      "Maretti Tomato, Olive & Oregano Oven-Baked Bruschette Chips 70g",
+      "Heinz Sauce Mustard Yellow 245g",
+      "Turkey Cheddar Cheese Wrap 240g",
+      "SPINACH ARABIC BREAD",
+      "Sourdough Whole Wheat Bread 400g"
+    ],
+    "text": "For a Low-Fat Turkey and Spinach Sandwich for 4, you'll need 8 slices Sourdough Whole Wheat Bread 400g, 200g lean sliced turkey breast, 100g fresh spinach, 2 medium sliced tomatoes, and 4 tsp Heinz Sauce Mustard Yellow 245g."
+  },
+  {
+    "id": "R05_c2_pasta_vegan",
+    "status": "PASS",
+    "duration": 13.25,
+    "persona": "Bob (Vegan)",
+    "query": "suggest a pasta dinner for 2 people",
+    "category_test": "Recipe + Vegan",
+    "matched_products": [
+      "Albadia Pasta Elbows 500G",
+      "Tomato Cherry Mix KSA 300g",
+      "Garlic Big Pack China",
+      "Oregano",
+      "Olive Oil Extra Virgin 1L"
+    ],
+    "text": "For a Simple Vegan Tomato Pasta dinner for 2, you'll need 200g Albadia Pasta Elbows, 400g Tomato Cherry Mix KSA, 2 cloves Garlic Big Pack China (now 15% off!), 2 tbsp Olive Oil Extra Virgin, and 1/4 tsp Oregano."
+  },
+  {
+    "id": "R06_c1_salad_produce",
+    "status": "PASS",
+    "duration": 21.88,
+    "persona": "Alice (Low-Fat)",
+    "query": "recipe for healthy green salad",
+    "category_test": "Recipe + Produce Guard",
+    "matched_products": [
+      "MF Semi-Dried Cherry Tomatoes 180g",
+      "Cortas Lemon Juice Substitute 1L",
+      "Cucumber Organic 1kg Qatar",
+      "Mixed Dried Fruits",
+      "Olive Oil Extra Virgin 1L"
+    ],
+    "text": "To make Healthy Green Salad for 2 people (default serving \u2014 tell me how many people to adjust quantities), you'll need 150g Mixed Salad Greens, 1/2 Cucumber Organic 1kg Qatar, 100g MF Semi-Dried Cherry Tomatoes 180g, 1 tbsp Olive Oil Extra Virgin 1L, and 2 tbsp Cortas Lemon Juice Substitute 1L."
+  },
+  {
+    "id": "R07_c3_pizza_family",
+    "status": "PASS",
+    "duration": 21.86,
+    "persona": "Charlie (Standard)",
+    "query": "recipe to make pizza for family of 4",
+    "category_test": "Recipe + Pizza Guard",
+    "matched_products": [
+      "MF Tomato Passata Soffritto 690g",
+      "Baladna Full Fat Shredded Mozzarella 900g",
+      "Awafi Grated Pizza Cheese",
+      "Salted Corn",
+      "Olive Oil Extra Virgin 1L"
+    ],
+    "text": "To make Pizza for 4 people, you'll need 200g MF Tomato Passata Soffritto 690g, 300g Baladna Full Fat Shredded Mozzarella 900g, and 2 tbsp Olive Oil Extra Virgin 1L."
+  },
+  {
+    "id": "A01_c1_instore_skimmed_milk",
+    "status": "PASS",
+    "duration": 3.65,
+    "persona": "Alice (Low-Fat)",
+    "query": "Skimmed Milk",
+    "category_test": "Channel Availability (In-Store)",
+    "matched_products": [
+      "Regilait Vitamilk Instant Skimmed Milk 1pc",
+      "R\u00e9gilait 0% Fat Instant Skimmed Milk Powder 800g",
+      "Baladna Fresh Skimmed Milk 1l"
+    ],
+    "text": "We found several skimmed milk options for you, including fresh and instant varieties from Baladna and Regilait."
+  },
+  {
+    "id": "A02_c1_online_oos_substitution",
+    "status": "PASS",
+    "duration": 5.39,
+    "persona": "Alice (Low-Fat)",
+    "query": "Luna Tomato Sauce",
+    "category_test": "Out-of-Stock Substitution",
+    "matched_products": [
+      "Classico Pasta Sauce Roasted Garlic 680g",
+      "Panzani Original Sauce 400g",
+      "Berruto Cup Pasta Tomato Mozzarella"
+    ],
+    "text": "We couldn't find Luna Tomato Sauce, but we have several delicious pasta and tomato sauces available for you."
+  },
+  {
+    "id": "S01_c1_fresh_fruits_typo",
+    "status": "PASS",
+    "duration": 7.4,
+    "persona": "Alice",
+    "query": "do you have fresh frutis?",
+    "category_test": "Produce + Typo Guard",
+    "matched_products": [
+      "Mima Frozen Mango Chunks 400g",
+      "Grapes Red China",
+      "Peaches Tunisia Pack"
+    ],
+    "text": "Absolutely, we have a great selection of fresh fruits like Red Grapes and Peaches for you!"
+  },
+  {
+    "id": "S02_c1_fresh_tomatos_typo",
+    "status": "PASS",
+    "duration": 4.14,
+    "persona": "Alice",
+    "query": "do you have tomatos?",
+    "category_test": "Produce + Canned Guard",
+    "matched_products": [
+      "Tomato Cherry Yellow KSA 300g",
+      "Tomato Jordan",
+      "Tomato Cherry Plum Red KSA"
+    ],
+    "text": "We have several tomato varieties available, including Tomato Cherry Yellow and Tomato Jordan."
+  },
+  {
+    "id": "S03_c3_fresh_chicken",
+    "status": "PASS",
+    "duration": 3.95,
+    "persona": "Charlie",
+    "query": "fresh chicken breast",
+    "category_test": "Meat & Seafood",
+    "matched_products": [
+      "Mazzraty Fresh Chicken Breast Fillet 500g",
+      "Sadia Chicken Breast Small Cubes IQF 750g",
+      "Euro Gourmet Sliced Chicken Breast with Pepper 130g"
+    ],
+    "text": "We found \"Mazzraty Fresh Chicken Breast Fillet 500g\" and other chicken breast options for you. Would you like to see more poultry or related items?"
+  },
+  {
+    "id": "S04_c3_baby_diapers",
+    "status": "PASS",
+    "duration": 3.35,
+    "persona": "Charlie",
+    "query": "baby diapers",
+    "category_test": "Baby Category",
+    "matched_products": [
+      "Pampers Premium Protection Baby Diapers Size 5 11-16 kg 47 Pieces",
+      "Sanita Bambi Baby Diapers Size 2 Small 3-6kg 19 Pieces",
+      "Sanita Bambi Baby Diapers Regular Pack Size 6 XX-Large 16+kg 10 Pieces"
+    ],
+    "text": "Here are the best matches for baby diapers found in our catalog. You'll find options from Pampers and Sanita Bambi in various sizes."
+  },
+  {
+    "id": "S05_c3_household_detergent",
+    "status": "PASS",
+    "duration": 5.36,
+    "persona": "Charlie",
+    "query": "laundry detergent",
+    "category_test": "Household Category",
+    "matched_products": [
+      "Dr. Beckmann Color Fabric Laundry Detergent Sheets 25 Sheets",
+      "Persil Deep Clean Oud Power Gel Laundry Detergent 2.5l",
+      "Pearl High-Foam Powder Laundry Detergent \u2013 Rose & Amber Fragrance, 1.5kg"
+    ],
+    "text": "Here are the best laundry detergent matches found in our Household section. Please browse the options below."
+  }
+]

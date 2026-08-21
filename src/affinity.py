@@ -69,7 +69,7 @@ def compute_and_save_affinity(db_path="db/mvp_demo.db", min_support=0.05, min_co
         # Fallback association mining:
         # We manually compute support and confidence for pairs
         # Transactions list of lists
-        transactions = df.groupby('transaction_id')['sku'].apply(set).tolist()
+        transactions = df.groupby('transaction_id')['sku'].apply(list).tolist()
         N = len(transactions)
         
         if N == 0:
